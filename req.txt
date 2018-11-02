@@ -1,0 +1,12 @@
+SELECT
+	c1.idchem as AgentId, c1.LabelEn as AgentName,
+    c1.SubFamily as SubFamilyId, c5.LabelEn as SubFamilyName,
+    c1.Family as FamilyId, c2.LabelEn as FamilyName,
+    c1.Group as GroupId, c3.LabelEn as GroupName,
+    c1.Category as Category, c4.LabelEn as CategoryName
+FROM 
+(select * from `hierarchie_agents` where LabelEn in ('Toluene', 'Xylene') AND Level = 'idchem') c1
+LEFT JOIN hierarchie_agents c5 on c1.SubFamily = c5.idchem AND c5.Level = 'subfamily'
+LEFT JOIN hierarchie_agents c2 on c1.Family = c2.idchem AND c2.Level = 'family'
+LEFT JOIN hierarchie_agents c3 on c1.Group = c3.idchem AND c3.Level = 'group'
+LEFT JOIN hierarchie_agents c4 on c1.Category = c4.idchem AND c4.Level = 'category'

@@ -1,0 +1,474 @@
+a.lang-link {
+  float: right;
+}
+
+header {
+  padding: 10px;
+  font-size: 13px;
+  background-color: papayawhip
+}
+
+table.classi-items tr.root-tr:first-child th:first-child {
+  width: 12%;
+}
+
+table.classi-items tr.root-tr:first-child th:nth-child(2) {
+  width: 70%;
+}
+
+.inline-b {
+  display: inline-block;
+}
+
+.float-l {
+  float: left;
+}
+
+.float-r {
+  float: right;
+}
+
+#loading-ajax{
+  background: url(../img/ellipsis-preloader-sml.gif) no-repeat;
+  width: 128px;
+  height: 128px;
+  left: 50%;
+  margin-left: -64px;
+  margin-top: -64px;
+  position: fixed;
+  top: 70%;
+  z-index: 1000000;
+}
+
+#loading-ajax span.loading-text {
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  font-size: 12px;
+  color: grey;
+}
+
+.width-400 {
+  width: 400px;
+}
+
+div.input > label {
+/*  text-align: left;
+  font-style: italic;*/
+  font-size: 11px;
+  font-variant: small-caps;
+}
+
+button.my-button {
+  border-radius: 5px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+div.expo-profile {
+  display: none;
+  border: 1px darkgreen ridge;
+  border-radius: 5px;
+  padding: 5px;
+  width: 100%;
+  float: right;
+  margin-top: 10px;
+  background-color: lemonchiffon;
+}
+
+body.extern div.expo-profile {
+  display: block;
+  width: 81%;
+  float: left;
+}
+
+div.expo-profile h3, div.expo-profile h4, div.expo-profile h5, div.expo-profile span, div.expo-profile th, div.expo-profile td {
+  font-family: 'Exo2', sans-serif !important;
+}
+
+span.chem-agent-id, span.chem-agent-name {
+  white-space: nowrap;
+}
+
+span.chem-agent-id {
+  font-size: 18px;
+}
+
+span.chem-agent-name {
+  vertical-align: top;
+}
+
+table.tbl-exposure-data tr.tr-heading:not(.tr-last-heading-row), table.tbl-exposure-data tr.tr-heading:not(.tr-last-heading-row) th, table.tbl-exposure-data tr.tr-heading:not(.tr-last-heading-row) td {
+  border-bottom: none;
+}
+
+table.tbl-exposure-data thead tr, table.tbl-exposure-data thead tr th {
+  border-bottom: none;
+}
+
+table.tbl-exposure-data tr.tr-last-heading-row th {
+  border-bottom: 2px solid brown;
+}
+
+table.tbl-exposure-data th {
+  white-space: nowrap;
+}
+
+table.tbl-exposure-data tr:first-child, table.tbl-exposure-data tr.tr-data:nth-child(2n+1) {
+  border-bottom: none;
+}
+
+table.tbl-exposure-data tbody tr td:first-child {
+  min-width: 145px;
+  max-width: 145px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+table.tbl-exposure-data tr.tr-data:nth-child(2n+1) td.chem-agent:first-child {
+  padding-top: 7px;
+}
+
+table.tbl-exposure-data tr th, table.tbl-exposure-data tr td {
+  padding: 4px;
+}
+
+table.tbl-exposure-data tr.tr-data-f td:not(.scroll) {
+  border-bottom: 2px solid #1798A5;
+}
+
+table.tbl-exposure-data td.section-end {
+  border-right: 2px solid #1798A5;
+}
+
+th.meta-heading {
+  color: darkgreen;
+  text-align: center;
+}
+
+div.page-results-bar {
+  height: 2px;
+}
+
+.pagination-counter {
+    display: inline-block;
+    margin-right: 1px;
+    padding: 2px;
+    color: darkblue;
+    font-size: 15px;
+    font-weight: bold;
+    vertical-align: middle;
+}
+
+table.tbl-exposure-data tbody {
+  display:block;
+  overflow:auto;
+  max-height:265px;
+  width:100%;
+}
+
+table.tbl-exposure-data thead {
+  display:block;
+  width: 100%;
+}
+
+table.tbl-exposure-data {
+  display: block;
+  table-layout: fixed;
+  width: 100%;
+  padding: 2px;
+}
+
+div.expo-table-div {
+  margin-top: 5px;
+  background-color: whitesmoke;
+}
+
+table.tbl-exposure-data thead th.chem-agent {
+  width: 145px;
+}
+
+body.extern table.tbl-exposure-data thead th.chem-agent {
+  width: 148px;
+}
+
+table.tbl-exposure-data tr .gender {
+  width: 20px;
+}
+
+table.tbl-exposure-data tr .p-exp {
+  width: 50px;
+}
+
+body:not(.extern) table.tbl-exposure-data tr th.n-exp {
+  width: 36px;
+}
+
+table.tbl-exposure-data tr td.n-exp {
+  width: 40px;
+}
+
+table.tbl-exposure-data tr th.concentration {
+  width: 54px;
+}
+
+table.tbl-exposure-data tr td.concentration {
+  width: 55px;
+}
+
+table.tbl-exposure-data tr .reliability {
+  width: 55px;
+}
+
+body.extern table.tbl-exposure-data tr th.reliability.section-end {
+  width: 55px;
+}
+
+/* Hack to align thead and tbody */
+table.tbl-exposure-data tr th.reliability.section-end {
+  width: 52px;
+}
+
+table.tbl-exposure-data tr .freq_median {
+  width: 75px;
+}
+
+table.tbl-exposure-data tr .freq_iqr {
+  width: 100px;
+}
+
+table.tbl-exposure-data tr .scroll {
+  width: 2px;
+}
+
+table.tbl-exposure-data div.summary {
+  display: inline-block;
+  border-bottom: 1px dotted #000;
+  text-align: center;
+  padding-left: 4px;
+  padding-bottom: 4px;
+}
+
+table.tbl-exposure-data tr.padding {
+  height: 10px;
+}
+  
+table.tbl-exposure-data span.summary-val {
+  color: purple;
+}
+
+svg.show-expo-data {
+  color: darkred;
+  cursor: pointer;
+}
+
+/*img.show-expo-data {
+  height: 20px;
+  width: 20px;
+  margin-left: 5px;
+  cursor: pointer;
+}*/
+
+header > div.links {
+  display: block;
+  height: 10px;
+}
+
+div.header-title {
+  display: block;
+  text-align: center;
+  padding: 10px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+}
+
+svg.agent-info {
+  color: orange;
+  cursor: pointer;
+  vertical-align: text-top;
+}
+
+div.footer {
+  position: fixed;
+  display: block;
+  width: 100%;
+  padding: 5px;
+  background-image: linear-gradient(lightpink, white);
+  left: 50%;
+  margin-left: -500px;
+  bottom: 0;
+  height: 30px;
+}
+
+div.pad {
+  display: block;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -500px;
+  width: 1200px;
+  background-color: white;
+  height: 2px;
+}
+
+div.footer > span.footer-text {
+  float: right;
+}
+
+span.title-text {
+  font-size: 30px;
+  font-weight: bold;
+  color: darkgreen;
+  background-color: lightgoldenrodyellow;
+  padding: 5px 10px;
+}
+
+.classi-items tr:last-child {
+  border-bottom: none;
+  text-align: center;
+}
+
+fieldset.find-occupations, fieldset.matching-occupations {
+  padding: 4px;
+}
+
+fieldset.find-occupations legend, fieldset.matching-occupations legend {
+  color: darkolivegreen;
+  border-bottom-color: black;
+}
+
+fieldset.matching-occupations {
+  position: relative;
+}
+
+fieldset.matching-occupations > div.classi-item-select-block {
+  display: block;
+  margin: 0 auto;
+  width: 95%;
+}
+
+span.expo-prof-tbl-title-code {
+  font-size: 16px;
+  font-style: italic;
+  color: darkgrey;
+  margin: 10px;
+}
+
+div.job-title > span {
+  display: none;
+}
+
+body.extern div.job-title > span {
+  display: block;
+  font-size: 14px;
+  font-style: italic;
+  color: brown;
+}
+
+input[type="search"] + svg.clear-input {
+}
+
+div.pos-rel {
+  position: relative;
+}
+
+input[type="text"].clearable {
+  background: #fff url('../img/x.gif') no-repeat right -10px center;
+  border: 1px solid #999;
+  padding: 3px 18px 3px 4px;     /* Use the same right padding (18) in jQ! */
+  border-radius: 3px;
+  transition: background 0.2s;
+}
+input[type="text"].clearable.x  { background-position: right 5px center; } /* (jQ) Show icon */
+input[type="text"].clearable.onX{ cursor: pointer; }              /* (jQ) hover cursor style */
+input[type="text"].clearable::-ms-clear {display: none; width:0; height:0;}
+
+
+div.error > span.err-msg {
+  font-size: 11px;
+  font-style: italic;
+}
+
+div.jobs-period {
+  display: inline-block;
+}
+
+input[type="number"].year-slider {
+  width: 65px;
+  padding: 3px;
+  height: 25px;
+}
+
+div.expo-table-div > div.summary {
+  background-color: white;
+}
+
+div.expo-table-div > div.summary div {
+  padding: 2px;
+}
+
+div.summary-label {
+  display: inline-block;
+  width: 60px;
+  font-weight: bold;
+  color: darkred;
+}
+
+div.nth-chem-agent {
+  display: inline-block;
+  font-size: 9px;
+  width: 15px;
+  vertical-align: top;
+  line-height: 9px;
+}
+
+div.year-slider {
+  width: 80px;
+}
+
+div.year-slider > input[type="number"] {
+  font-size: 16px;
+}
+
+div.classi-code {
+  width: 365px;
+}
+
+a.show-expo-profile-elsewhere {
+  color: violet;
+}
+
+a.occup-title {
+  cursor: help;
+}
+
+select.chosen-select + div.chosen-container {
+  width: 100%;
+}
+
+div.width-100pc {
+  width: 100%;
+}
+
+div.width-90pc {
+  width: 90%;
+}
+
+div.chosen-container li.chosen-deselect-all {
+  float: right;
+}
+
+li.chosen-deselect-all > a {
+  vertical-align: sub;
+}
+
+ul.chosen-results li {
+  text-align: left;
+}
+
+.minwidth-50 {
+  min-width: 50%;
+}
