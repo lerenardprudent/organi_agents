@@ -78,7 +78,7 @@ $this->Form->templates([
   <div class="row header-title">
     <div class="columns large-12 text-center">
       <div class="inline-b width-90pc">
-        <?= $this->Form->input('choice_agents', ['options' => $chemAgents, 'label' => false, 'type' => 'select', 'class' => 'chosen-select', 'templateVars' => ['extraclasses' => 'inline-b minwidth-50'], 'multiple' => true, 'data-placeholder' => __("select_agents"), 'data-no-results-text' => __("no_agents_found"), 'data-unselect-all-text' => __("Unselect all"), 'data-url-build-tree-config' => $this->Url->build(['controller' => 'Ajax', 'action' => 'build-tree-config'])]) ?>
+        <?= $this->Form->input('choice_agents', ['options' => $chemAgents, 'label' => false, 'type' => 'select', 'class' => 'chosen-select', 'templateVars' => ['extraclasses' => 'inline-b minwidth-50'], 'multiple' => true, 'data-placeholder' => __("select_agents"), 'data-no-results-text' => __("no_agents_found"), 'data-unselect-all-text' => __("Unselect all"), 'data-selected' => [], 'data-url-build-tree-config' => $this->Url->build(['controller' => 'Ajax', 'action' => 'build-tree-config'])]) ?>
         <?= $this->Form->button(__('Draw'), ['name' => 'draw-button', 'type' => 'button', 'class' => 'draw-tree my-button', 'disabled' => true, 'templateVars' => ['extraclasses' => 'inline-b']]) ?>
       </div>
     </div>

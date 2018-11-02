@@ -365,7 +365,7 @@ function showAjaxSpinner(show)
     $sel = $(evt.target);
     var selectedAgents = $sel.find('option:selected').map(function() { return $(this).val(); }).get();
     $('[name=draw-button]').prop('disabled', selectedAgents.length == 0)
-    $sel.attr('data-selected', selectedAgents);
+    $sel.data('selected', selectedAgents);
     $cc = $sel.next().find('.chosen-choices')
     var className = "chosen-deselect-all";
     if ( selectedAgents.length == 2 && $cc.find('.' + className).length == 0 ) {

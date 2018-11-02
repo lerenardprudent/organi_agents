@@ -177,42 +177,55 @@ class AjaxController extends AppController {
     $ret->ok = true;
     $agentIds = $_GET['agents'];
     $items = $this->loadModel('Agents')->find()->contain(['SubFamilies', 'Families', 'Groups', 'Categories'])->where(['Agents.idchem IN' => $agentIds])->toArray();
-    $nodes = [];
     $labelFld = "label".Inflector::camelize($this->lang);
-    $allRows = [];
+    $rootNodeName = 'root';
+    $childrenDropLevels = [];
+    
+    $rootNode = new \stdClass();
+    $rootNode->root = true;
+    $nodes = [$rootNodeName => $rootNode];
+    
     foreach ( $items as $item ) {
+      $parentNodeId = null;
       $chemNode = new \stdClass();
       $this->initNode($chemNode, $item, $labelFld);
-      
-      $parentNodeId = null;
       if ( isset($item->SubFamily) ) {
         $parentNodeId = "subFamily".$item->SubFamily;
+        $childDropLevel = 0;
       } else
       if ( isset($item->Family) ) {
         $parentNodeId = "family".$item->Family;
+        $childDropLevel = 1;
       } else
       if ( isset($item->Group) ) {
         $parentNodeId = "group".$item->Group;
+        $childDropLevel = 2;
       } else {
         $parentNodeId = "category".$item->Category;
+        $childDropLevel = 3;
       }
       $chemNode->nodeInfo['parent'] = $parentNodeId;
       $nodes[$chemNode->varname] = $chemNode;
-      
+      $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
+            
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
         $subFamNode = new \stdClass();
         $this->initNode($subFamNode, $subFamilyItem, $labelFld);
         if ( isset($subFamilyItem->Family) ) {
           $parentNodeId = "family".$subFamilyItem->Family;
+          $childDropLevel = 0;
         } else
         if ( isset($subFamilyItem->Group) ) {
           $parentNodeId = "group".$subFamilyItem->Group;
+          $childDropLevel = 1;
         } else {
           $parentNodeId = "category".$subFamilyItem->Category;
+          $childDropLevel = 2;
         }
         $subFamNode->nodeInfo['parent'] = $parentNodeId;
         $nodes[$subFamNode->varname] = $subFamNode;
+        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
       
       if ( isset($item->Family) && !isset($nodes['family'.$item->Family]) ) {
@@ -222,11 +235,14 @@ class AjaxController extends AppController {
         
         if ( isset($familyItem->Group) ) {
           $parentNodeId = "group".$familyItem->Group;
+          $childDropLevel = 0;
         } else {
           $parentNodeId = "category".$familyItem->Category;
+          $childDropLevel = 1;
         }
         $famNode->nodeInfo['parent'] = $parentNodeId;
         $nodes[$famNode->varname] = $famNode;
+        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
       
       if ( isset($item->Group) && !isset($nodes['group'.$item->Group]) ) {
@@ -242,12 +258,20 @@ class AjaxController extends AppController {
         $categoryItem = $item->category;
         $cateNode = new \stdClass();
         $this->initNode($cateNode, $categoryItem, $labelFld);
+        $cateNode->nodeInfo['parent'] = $rootNodeName;
         $nodes[$cateNode->varname] = $cateNode;
       }
     }
     
-    @uasort($nodes, array($this, "sortNodes"));
+    foreach( $childrenDropLevels as $nodeid => $cdl ) {
+      $cdl = array_unique($cdl);
+      if ( count($cdl) == 1 && $cdl[0] > 0 ) {
+        $nodes[$nodeid]->nodeInfo['childrenDropLevel'] = $cdl[0];
+      }
+    }
     
+    @uasort($nodes, array($this, "sortNodes"));
+        
     $htmlRoot = "#tree-root";
     $configElemName = 'config';
     $config = [
@@ -255,7 +279,8 @@ class AjaxController extends AppController {
         'container' => $htmlRoot,
         'nodeAlign' => "BOTTOM",
         'connectors' => [ 'type' => 'step' ],
-        'node' => ['HTMLclass' => 'nodeExample1']
+        'node' => ['HTMLclass' => 'nodeExample1'],
+        'hideRootNode' => true
       ]
     ];
     
@@ -263,6 +288,7 @@ class AjaxController extends AppController {
     $topLevelConfig = [
         $topLevelConfigElemName => array_merge([$configElemName], array_keys($nodes))
     ];
+    
     
     $allConfig = array_merge($config, $nodes);
     $jsConfigStrs = [];
@@ -310,7 +336,7 @@ class AjaxController extends AppController {
       $type = __("Category");
     }
     $node->varname = $pfx.$data->idchem;
-    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => 'light-gray' ];
+    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'contact' => strval($data->idchem), 'HTMLclass' => 'light-gray'];
     
     $members = ["SubFamily", "Family", "Group", "Category"];
     foreach ( $members as $member ) {
@@ -321,12 +347,17 @@ class AjaxController extends AppController {
   }
   
   function sortNodes($node1, $node2) {
-    try {
     $levelOrder = ["category", "group", "family", "subfamily", "idchem"];
     
     $o1 = array_search($node1->level, $levelOrder);
     $o2 = array_search($node2->level, $levelOrder);
     
+    if ( isset($node1->root) ) {
+      $ret = -1;
+    } else
+    if ( isset($node2->root) ) {
+      $ret = 1;
+    } else
     if ( $o1 != $o2 ) {
       $ret = strcmp($o1, $o2);
     } else
@@ -366,10 +397,15 @@ class AjaxController extends AppController {
       $ret = 0;
     }
     
-    
-    } catch( \Exception $e ) {
-      $ret = 69;
-    }
     return $ret;
   } 
+  
+  function updateDropLevels(&$childrenDropLevels, $nodeId, $dropLevel)
+  {
+    if ( isset($childrenDropLevels[$nodeId]) ) {
+      array_push($childrenDropLevels[$nodeId], $dropLevel);
+    } else {
+      $childrenDropLevels[$nodeId] = [$dropLevel];
+    }
+  }
 }
