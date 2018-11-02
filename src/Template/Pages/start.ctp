@@ -88,6 +88,10 @@ $this->Form->templates([
   </div>
   <div id="tree-root"></div>
   <div id="tree-root2"></div>
-
+  
+  <div id="loading-ajax" style="display:none">
+    <span class="loading-info"></span>
+    <span class='loading-text'><?= __("Processing")."..." ?></span>
+  </div>
 </body>
 </html>

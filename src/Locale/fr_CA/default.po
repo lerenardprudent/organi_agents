@@ -38,3 +38,9 @@ msgstr "Groupe"
 
 msgid "Category"
 msgstr "Catégorie"
+
+msgid "Processing"
+msgstr "Traitement en cours"
+
+msgid "Unselect all"
+msgstr "Tout désélectionner"

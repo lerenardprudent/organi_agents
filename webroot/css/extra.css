@@ -30,11 +30,11 @@ table.classi-items tr.root-tr:first-child th:nth-child(2) {
 
 #loading-ajax{
   background: url(../img/ellipsis-preloader-sml.gif) no-repeat;
-  width: 128px;
-  height: 128px;
+  width: 150px;
+  height: 150px;
   left: 50%;
-  margin-left: -64px;
-  margin-top: -64px;
+  margin-left: -75px;
+  margin-top: -75px;
   position: fixed;
   top: 70%;
   z-index: 1000000;
@@ -42,8 +42,8 @@ table.classi-items tr.root-tr:first-child th:nth-child(2) {
 
 #loading-ajax span.loading-text {
   position: absolute;
-  bottom: 25px;
-  left: 25px;
+  bottom: 40px;
+  left: 20px;
   font-size: 12px;
   color: grey;
 }

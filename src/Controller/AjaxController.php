@@ -179,8 +179,11 @@ class AjaxController extends AppController {
     $items = $this->loadModel('Agents')->find()->contain(['SubFamilies', 'Families', 'Groups', 'Categories'])->where(['Agents.idchem IN' => $agentIds])->toArray();
     $nodes = [];
     $labelFld = "label".Inflector::camelize($this->lang);
+    $allRows = [];
     foreach ( $items as $item ) {
-      $nodeInfo = ['text' => ['name' => 'Agent', 'title' => $item->$labelFld], 'HTMLclass' => 'light-gray' ];
+      $chemNode = new \stdClass();
+      $this->initNode($chemNode, $item, $labelFld);
+      
       $parentNodeId = null;
       if ( isset($item->SubFamily) ) {
         $parentNodeId = "subFamily".$item->SubFamily;
@@ -193,12 +196,13 @@ class AjaxController extends AppController {
       } else {
         $parentNodeId = "category".$item->Category;
       }
-      $nodeInfo['parent'] = $parentNodeId;
-      $nodes['agent'.$item->idchem] = $nodeInfo;
+      $chemNode->nodeInfo['parent'] = $parentNodeId;
+      $nodes[$chemNode->varname] = $chemNode;
       
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
-        $nodeInfo = ['text' => ['name' => 'SubFamily', 'title' => $subFamilyItem->$labelFld], 'HTMLclass' => 'light-gray' ];
+        $subFamNode = new \stdClass();
+        $this->initNode($subFamNode, $subFamilyItem, $labelFld);
         if ( isset($subFamilyItem->Family) ) {
           $parentNodeId = "family".$subFamilyItem->Family;
         } else
@@ -207,36 +211,42 @@ class AjaxController extends AppController {
         } else {
           $parentNodeId = "category".$subFamilyItem->Category;
         }
-        $nodeInfo['parent'] = $parentNodeId;
-        $nodes['subFamily'.$item->SubFamily] = $nodeInfo;
+        $subFamNode->nodeInfo['parent'] = $parentNodeId;
+        $nodes[$subFamNode->varname] = $subFamNode;
       }
       
       if ( isset($item->Family) && !isset($nodes['family'.$item->Family]) ) {
         $familyItem = $item->family;
-        $nodeInfo = ['text' => ['name' => 'Family', 'title' => $familyItem->$labelFld], 'HTMLclass' => 'light-gray' ];
+        $famNode = new \stdClass();
+        $this->initNode($famNode, $familyItem, $labelFld);
+        
         if ( isset($familyItem->Group) ) {
           $parentNodeId = "group".$familyItem->Group;
         } else {
           $parentNodeId = "category".$familyItem->Category;
         }
-        $nodeInfo['parent'] = $parentNodeId;
-        $nodes['family'.$item->Family] = $nodeInfo;
+        $famNode->nodeInfo['parent'] = $parentNodeId;
+        $nodes[$famNode->varname] = $famNode;
       }
       
       if ( isset($item->Group) && !isset($nodes['group'.$item->Group]) ) {
         $groupItem = $item->group;
-        $nodeInfo = ['text' => ['name' => 'Group', 'title' => $groupItem->$labelFld], 'HTMLclass' => 'light-gray' ];
+        $groupNode = new \stdClass();
+        $this->initNode($groupNode, $groupItem, $labelFld);
         $parentNodeId = "category".$familyItem->Category;
-        $nodeInfo['parent'] = $parentNodeId;
-        $nodes['group'.$item->Group] = $nodeInfo;
+        $groupNode->nodeInfo['parent'] = $parentNodeId;
+        $nodes[$groupNode->varname] = $groupNode;
       }
       
       if ( !isset($nodes['category'.$item->Category]) ) {
         $categoryItem = $item->category;
-        $nodeInfo = ['text' => ['name' => 'Category', 'title' => $categoryItem->$labelFld], 'HTMLclass' => 'light-gray' ];
-        $nodes['category'.$item->Category] = $nodeInfo;
+        $cateNode = new \stdClass();
+        $this->initNode($cateNode, $categoryItem, $labelFld);
+        $nodes[$cateNode->varname] = $cateNode;
       }
     }
+    
+    @uasort($nodes, array($this, "sortNodes"));
     
     $htmlRoot = "#tree-root";
     $configElemName = 'config';
@@ -257,7 +267,10 @@ class AjaxController extends AppController {
     $allConfig = array_merge($config, $nodes);
     $jsConfigStrs = [];
     foreach ( $allConfig as $varname => $conf ) {
-      $js = "$varname = ".json_encode($allConfig[$varname]);
+      $obj = isset($conf->nodeInfo) ? $conf->nodeInfo : $conf;
+      $js = "$varname = ".json_encode($obj);
+      $js = preg_replace('/(?<!:)\"([^\"\,\:]+)\"/', "$1$2", $js);
+      $js = preg_replace('/(parent:)\"([^\"\,\:]+)\"/', "$1$2", $js);
       array_push($jsConfigStrs, $js);
     }
     foreach ( $topLevelConfig as $varname => $conf ) {
@@ -266,10 +279,97 @@ class AjaxController extends AppController {
     }
     $jsConfigStr = "var ".implode(','.PHP_EOL, $jsConfigStrs).";";
     $outFile = 'js/tree-config3.js';
-    //file_put_contents($outFile, $jsConfigStr);
+    file_put_contents($outFile, $jsConfigStr);
     $ret->rootElem = $htmlRoot;
     $ret->treeConfigFilename = $outFile;
     $respBody = json_encode($ret);
     $this->response->body($respBody);
   }
+  
+  function initNode(&$node, $data, $labelFld) {
+    
+    $lvl = $data->level;
+    $node->level = $lvl;
+    if ( $lvl == "idchem" ) {
+      $pfx = "agent";
+      $type = __("Agent");
+    } else
+    if ( $lvl == "subfamily" ) {
+      $pfx = "subFamily";
+      $type = __("SubFamily");
+    } else
+    if ( $lvl == "family" ) {
+      $pfx = "family";
+      $type = __("Family");
+    } else 
+    if ( $lvl == "group") {
+      $pfx = "group";
+      $type = __("Group");
+    } else {
+      $pfx = "category";
+      $type = __("Category");
+    }
+    $node->varname = $pfx.$data->idchem;
+    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => 'light-gray' ];
+    
+    $members = ["SubFamily", "Family", "Group", "Category"];
+    foreach ( $members as $member ) {
+      if ( isset($data->$member) ) {
+        $node->$member = $data->$member;
+      }
+    }
+  }
+  
+  function sortNodes($node1, $node2) {
+    try {
+    $levelOrder = ["category", "group", "family", "subfamily", "idchem"];
+    
+    $o1 = array_search($node1->level, $levelOrder);
+    $o2 = array_search($node2->level, $levelOrder);
+    
+    if ( $o1 != $o2 ) {
+      $ret = strcmp($o1, $o2);
+    } else
+    if ( $node1->Category != $node2->Category ) {
+      $ret = strcmp($node1->Category, $node2->Category);
+    } else
+    if ( !isset($node1->Group) ) {
+      $ret = -1;
+    } else
+    if ( !isset($node2->Group) ) {
+      $ret = 1;
+    } else if ( $node1->Group != $node2->Group ) {
+      $ret = strcmp($node1->Group, $node2->Group);
+    }
+    else
+    if ( !isset($node1->Family) ) {
+      $ret = -1;
+    } else
+    if ( !isset($node2->Family) ) {
+      $ret = 1;
+    } else if ( $node1->Family != $node2->Family ) {
+      $ret = strcmp($node1->Family, $node2->Family);
+    }
+    else
+    if ( !isset($node1->SubFamily) ) {
+      $ret = -1;
+    } else
+    if ( !isset($node2->SubFamily) ) {
+      $ret = 1;
+    } else if ( $node1->SubFamily != $node2->SubFamily ) {
+      $ret = strcmp($node1->SubFamily, $node2->SubFamily);
+    }
+    else
+    if ( $node1->idchem != $node2->idchem ) {
+      $ret = strcmp($node1->idchem, $node2->idchem);
+    } else {
+      $ret = 0;
+    }
+    
+    
+    } catch( \Exception $e ) {
+      $ret = 69;
+    }
+    return $ret;
+  } 
 }
