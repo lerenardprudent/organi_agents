@@ -49,3 +49,7 @@ body { background: #fff; }
 .related-agent {
   border: 4px solid green;
 }
+
+.node-desc {
+  font-style: italic;
+}

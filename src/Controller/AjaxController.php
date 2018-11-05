@@ -180,10 +180,11 @@ class AjaxController extends AppController {
     $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
     $selectFlds = [];
     foreach (array_merge(['Agents', 'RelAgents'], $modelsToContain) as $mod) {
-      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
+      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category', 'job_count'] as $memb) {
         $selectFlds[] = "$mod.$memb";
       }
     }
+    
     $items = $this->loadModel('Agents')
                   ->find()
                   ->join(['RelAgents' => ['table' => 'agnts',
@@ -410,7 +411,11 @@ class AjaxController extends AppController {
       $htmlClasses[] = 'related-agent';
     }
     $node->varname = $pfx.$data->idchem;
-    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
+    $nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
+    if ( isset($data->job_count) ) {
+      $nodeInfo['text']['desc'] = __("agent_jobs", [$data->job_count]);
+    }
+    $node->nodeInfo = $nodeInfo;
     
     $members = ["SubFamily", "Family", "Group", "Category"];
     foreach ( $members as $member ) {

@@ -24,8 +24,8 @@ msgstr "Sélectionner un sous-ensemble d'agents chimiques à afficher"
 msgid "no_agents_found"
 msgstr "Aucuns agents trouvés"
 
-msgid "Draw"
-msgstr "Dessiner"
+msgid "draw_hierarchy"
+msgstr "Dessiner l'organigramme"
 
 msgid "SubFamily"
 msgstr "SousFamille"
@@ -44,3 +44,6 @@ msgstr "Traitement en cours"
 
 msgid "Unselect all"
 msgstr "Tout désélectionner"
+
+msgid "agent_jobs"
+msgstr "{0} emplois codés"

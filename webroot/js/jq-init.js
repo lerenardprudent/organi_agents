@@ -21,9 +21,6 @@ function initElems()
   $('.lang-link').click(function(e) {
     e.preventDefault();
     var url = $(this).attr('href');
-    if ( $('[name=classi_code]').val().length ) {
-      url += "&code=" + $('[name=classi_code]').val();
-    }
     window.location.href = url;
   })
 

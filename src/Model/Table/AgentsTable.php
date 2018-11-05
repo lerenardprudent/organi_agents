@@ -25,23 +25,18 @@ class AgentsTable extends Table
       $this->setTable('agnts');
       
       $this->addAssociations([
-        'belongsTo'    => [ 'SubFamilies' => [ 'className' => 'sub_fams',
-                                               'foreignKey' => 'SubFamily',
-                                               'bindingKey' => 'idchem'
-                                           ],
-                            'Families' => [ 'className' => 'fams',
-                                               'foreignKey' => 'Family',
-                                               'bindingKey' => 'idchem'
-                                           ],
-                            'Groups' => [ 'className' => 'grps',
-                                               'foreignKey' => 'Group',
-                                               'bindingKey' => 'idchem'
-                                           ],
-                            'Categories' => [ 'className' => 'categs',
-                                               'foreignKey' => 'Category',
-                                               'bindingKey' => 'idchem'
-                                           ]
-                          ]
+        'belongsTo' => [ 'SubFamilies' => [ 'className' => 'sub_fams',
+                                            'foreignKey' => 'SubFamily',
+                                            'bindingKey' => 'idchem' ],
+                         'Families' =>    [ 'className' => 'fams',
+                                            'foreignKey' => 'Family',
+                                            'bindingKey' => 'idchem' ],
+                         'Groups' =>      [ 'className' => 'grps',
+                                            'foreignKey' => 'Group',
+                                            'bindingKey' => 'idchem' ],
+                         'Categories' =>  [ 'className' => 'categs',
+                                            'foreignKey' => 'Category',
+                                            'bindingKey' => 'idchem' ] ]
       ]);
     }
 }

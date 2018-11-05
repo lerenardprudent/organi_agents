@@ -24,3 +24,9 @@ msgstr "Select a subset of chemical agents to show"
 
 msgid "no_agents_found"
 msgstr "No agents found"
+
+msgid "agent_jobs"
+msgstr "{0} jobs coded"
+
+msgid "draw_hierarchy"
+msgstr "Draw hierarchy"
