@@ -212,8 +212,7 @@ class AjaxController extends AppController {
     
     foreach ( $items as $item ) {
       $parentNodeId = null;
-      $chemNode = new \stdClass();
-      $this->initNode($chemNode, $item, $labelFld);
+      $chemNode = $this->initNode($item, $labelFld, true);
       if ( isset($item->SubFamily) ) {
         $parentNodeId = "subFamily".$item->SubFamily;
         $childDropLevel = 0;
@@ -235,9 +234,8 @@ class AjaxController extends AppController {
       
       $parentNodeId = null;
       if ( isset($item->RelAgents) ) {
-        $relItem = (object) $item->RelAgents;
-        $relNode = new \stdClass();
-        $this->initNode($relNode, $relItem, $labelFld);
+        $relItem = $item->RelAgents;
+        $relNode = $this->initNode($relItem, $labelFld);
         if ( isset($relItem->SubFamily) ) {
           $parentNodeId = "subFamily".$relItem->SubFamily;
           $childDropLevel = 0;
@@ -260,8 +258,7 @@ class AjaxController extends AppController {
             
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
-        $subFamNode = new \stdClass();
-        $this->initNode($subFamNode, $subFamilyItem, $labelFld);
+        $subFamNode = $this->initNode($subFamilyItem, $labelFld);
         if ( isset($subFamilyItem->Family) ) {
           $parentNodeId = "family".$subFamilyItem->Family;
           $childDropLevel = 0;
@@ -280,8 +277,7 @@ class AjaxController extends AppController {
       
       if ( isset($item->Family) && !isset($nodes['family'.$item->Family]) ) {
         $familyItem = $item->family;
-        $famNode = new \stdClass();
-        $this->initNode($famNode, $familyItem, $labelFld);
+        $famNode = $this->initNode($familyItem, $labelFld);
         
         if ( isset($familyItem->Group) ) {
           $parentNodeId = "group".$familyItem->Group;
@@ -297,8 +293,7 @@ class AjaxController extends AppController {
       
       if ( isset($item->Group) && !isset($nodes['group'.$item->Group]) ) {
         $groupItem = $item->group;
-        $groupNode = new \stdClass();
-        $this->initNode($groupNode, $groupItem, $labelFld);
+        $groupNode = $this->initNode($groupItem, $labelFld);
         $parentNodeId = "category".$familyItem->Category;
         $groupNode->nodeInfo['parent'] = $parentNodeId;
         $nodes[$groupNode->varname] = $groupNode;
@@ -306,8 +301,7 @@ class AjaxController extends AppController {
       
       if ( !isset($nodes['category'.$item->Category]) ) {
         $categoryItem = $item->category;
-        $cateNode = new \stdClass();
-        $this->initNode($cateNode, $categoryItem, $labelFld);
+        $cateNode = $this->initNode($categoryItem, $labelFld);
         $cateNode->nodeInfo['parent'] = $rootNodeName;
         $nodes[$cateNode->varname] = $cateNode;
       }
@@ -362,10 +356,17 @@ class AjaxController extends AppController {
     $this->response->body($respBody);
   }
   
-  function initNode(&$node, $data, $labelFld)
+  function initNode(&$data, $labelFld, $selected = false)
   {
+    $node = new \stdClass();
+    $relatedNode = false;
+    if ( is_array($data) ) {
+      $data = (object) $data;
+      $relatedNode = true;
+    }
     $lvls = explode("," , $data->level);
     $canjemOrig = false;
+    
     $pos = array_search("idchem", $lvls);
     if ( $pos !== false ) {
       $canjemOrig = true;
@@ -400,8 +401,16 @@ class AjaxController extends AppController {
       $pfx = "category";
       $type = __("Category");
     }
+    
+    $htmlClasses = [$canjemOrig ? 'blue' : 'light-gray'];
+    if ( $selected ) {
+      $htmlClasses[] = 'selected-agent';
+    } else
+    if ( $relatedNode ) {
+      $htmlClasses[] = 'related-agent';
+    }
     $node->varname = $pfx.$data->idchem;
-    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'contact' => strval($data->idchem), 'HTMLclass' => $canjemOrig ? 'blue' : 'light-gray'];
+    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
     
     $members = ["SubFamily", "Family", "Group", "Category"];
     foreach ( $members as $member ) {
@@ -409,6 +418,8 @@ class AjaxController extends AppController {
         $node->$member = $data->$member;
       }
     }
+    
+    return $node;
   }
   
   function sortNodes($node1, $node2) {
