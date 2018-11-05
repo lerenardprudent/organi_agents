@@ -182,7 +182,6 @@ class AjaxController extends AppController {
     $childrenDropLevels = [];
     
     $rootNode = new \stdClass();
-    $rootNode->root = true;
     $nodes = [$rootNodeName => $rootNode];
     
     foreach ( $items as $item ) {
@@ -312,9 +311,24 @@ class AjaxController extends AppController {
     $this->response->body($respBody);
   }
   
-  function initNode(&$node, $data, $labelFld) {
-    
-    $lvl = $data->level;
+  function initNode(&$node, $data, $labelFld)
+  {
+    $lvls = explode("," , $data->level);
+    $canjemOrig = false;
+    $pos = array_search("idchem", $lvls);
+    if ( $pos !== false ) {
+      $canjemOrig = true;
+      if ( count($lvls) == 2 ) {
+        $lvl = $lvls[1-$pos];
+      } else
+      if ( count($lvls) == 1 ) {
+        $lvl = $lvls[0];
+      } else {
+        throw new \Exception("Types d'agents non-reconnus !");
+      }
+    } else {
+      $lvl = $data->level;
+    }
     $node->level = $lvl;
     if ( $lvl == "idchem" ) {
       $pfx = "agent";
@@ -336,7 +350,7 @@ class AjaxController extends AppController {
       $type = __("Category");
     }
     $node->varname = $pfx.$data->idchem;
-    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'contact' => strval($data->idchem), 'HTMLclass' => 'light-gray'];
+    $node->nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'contact' => strval($data->idchem), 'HTMLclass' => $canjemOrig ? 'blue' : 'light-gray'];
     
     $members = ["SubFamily", "Family", "Group", "Category"];
     foreach ( $members as $member ) {
@@ -351,11 +365,13 @@ class AjaxController extends AppController {
     
     $o1 = array_search($node1->level, $levelOrder);
     $o2 = array_search($node2->level, $levelOrder);
+    $node1IsRoot = !isset($node1->nodeInfo);
+    $node2IsRoot = !isset($node2->nodeInfo);
     
-    if ( isset($node1->root) ) {
+    if ( $node1IsRoot ) {
       $ret = -1;
     } else
-    if ( isset($node2->root) ) {
+    if ( $node2IsRoot ) {
       $ret = 1;
     } else
     if ( $o1 != $o2 ) {
@@ -371,32 +387,33 @@ class AjaxController extends AppController {
       $ret = 1;
     } else if ( $node1->Group != $node2->Group ) {
       $ret = strcmp($node1->Group, $node2->Group);
-    }
-    else
+    } else
     if ( !isset($node1->Family) ) {
       $ret = -1;
     } else
     if ( !isset($node2->Family) ) {
       $ret = 1;
-    } else if ( $node1->Family != $node2->Family ) {
+    } else
+    if ( $node1->Family != $node2->Family ) {
       $ret = strcmp($node1->Family, $node2->Family);
-    }
-    else
+    } else
     if ( !isset($node1->SubFamily) ) {
       $ret = -1;
     } else
     if ( !isset($node2->SubFamily) ) {
       $ret = 1;
-    } else if ( $node1->SubFamily != $node2->SubFamily ) {
-      $ret = strcmp($node1->SubFamily, $node2->SubFamily);
     }
-    else
+    else if ( $node1->SubFamily != $node2->SubFamily ) {
+      $ret = strcmp($node1->SubFamily, $node2->SubFamily);
+    } else
     if ( $node1->idchem != $node2->idchem ) {
       $ret = strcmp($node1->idchem, $node2->idchem);
     } else {
       $ret = 0;
     }
     
+    $sortLog = ($node1->varname ? $node1->varname : "root")." vs ".($node2->varname ? $node2->varname : "root")." : ".$ret.PHP_EOL;
+    error_log($sortLog, 3, "C:/Users/p0070611/Documents/NetBeansProjects/OrganigrammeAgentsChimiques/logs/error.log");
     return $ret;
   } 
   

@@ -21,22 +21,23 @@ class AgentsTable extends Table
     {
       parent::initialize($config);
 
-      $this->setTable('hierarchie_agents');
+      //$this->setTable('hierarchie_agents');
+      $this->setTable('agnts');
       
       $this->addAssociations([
-        'belongsTo'    => [ 'SubFamilies' => [ 'className' => 'Agents',
+        'belongsTo'    => [ 'SubFamilies' => [ 'className' => 'sub_fams',
                                                'foreignKey' => 'SubFamily',
                                                'bindingKey' => 'idchem'
                                            ],
-                            'Families' => [ 'className' => 'Agents',
+                            'Families' => [ 'className' => 'fams',
                                                'foreignKey' => 'Family',
                                                'bindingKey' => 'idchem'
                                            ],
-                            'Groups' => [ 'className' => 'Agents',
+                            'Groups' => [ 'className' => 'grps',
                                                'foreignKey' => 'Group',
                                                'bindingKey' => 'idchem'
                                            ],
-                            'Categories' => [ 'className' => 'Agents',
+                            'Categories' => [ 'className' => 'categs',
                                                'foreignKey' => 'Category',
                                                'bindingKey' => 'idchem'
                                            ]
