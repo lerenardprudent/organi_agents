@@ -176,8 +176,34 @@ class AjaxController extends AppController {
     $ret = new \stdClass;
     $ret->ok = true;
     $agentIds = $_GET['agents'];
-    $items = $this->loadModel('Agents')->find()->contain(['SubFamilies', 'Families', 'Groups', 'Categories'])->where(['Agents.idchem IN' => $agentIds])->toArray();
     $labelFld = "label".Inflector::camelize($this->lang);
+    $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
+    $selectFlds = [];
+    foreach (array_merge(['Agents', 'RelAgents'], $modelsToContain) as $mod) {
+      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
+        $selectFlds[] = "$mod.$memb";
+      }
+    }
+    $items = $this->loadModel('Agents')
+                  ->find()
+                  ->join(['RelAgents' => ['table' => 'agnts',
+                                          'type' => 'LEFT',
+                                          'conditions' => "(CASE WHEN Agents.SubFamily IS NOT null THEN Agents.SubFamily ".
+                                                          "      WHEN Agents.Family IS NOT null THEN Agents.Family ".
+                                                          "      WHEN Agents.`Group` IS NOT null THEN Agents.`Group` ".
+                                                          "      ELSE Agents.Category END) = ".
+                                                          "(CASE WHEN Agents.SubFamily IS NOT null THEN RelAgents.SubFamily ".
+                                                          "      WHEN Agents.Family IS NOT null THEN RelAgents.Family ".
+                                                          "      WHEN Agents.`Group` IS NOT null THEN RelAgents.`Group` ".
+                                                          "      ELSE RelAgents.Category END)"
+                                         ]
+                         ])
+                  ->select($selectFlds, false)
+                  ->contain($modelsToContain)
+                  ->where(['Agents.idchem IN' => $agentIds,
+                           'RelAgents.idchem <> Agents.idchem'])
+                  ->toArray();
+    
     $rootNodeName = 'root';
     $childrenDropLevels = [];
     
@@ -206,6 +232,31 @@ class AjaxController extends AppController {
       $chemNode->nodeInfo['parent'] = $parentNodeId;
       $nodes[$chemNode->varname] = $chemNode;
       $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
+      
+      $parentNodeId = null;
+      if ( isset($item->RelAgents) ) {
+        $relItem = (object) $item->RelAgents;
+        $relNode = new \stdClass();
+        $this->initNode($relNode, $relItem, $labelFld);
+        if ( isset($relItem->SubFamily) ) {
+          $parentNodeId = "subFamily".$relItem->SubFamily;
+          $childDropLevel = 0;
+        } else
+        if ( isset($relItem->Family) ) {
+          $parentNodeId = "family".$relItem->Family;
+          $childDropLevel = 1;
+        } else
+        if ( isset($relItem->Group) ) {
+          $parentNodeId = "group".$relItem->Group;
+          $childDropLevel = 2;
+        } else {
+          $parentNodeId = "category".$relItem->Category;
+          $childDropLevel = 3;
+        }
+        $relNode->nodeInfo['parent'] = $parentNodeId;
+        $nodes[$relNode->varname] = $relNode;
+        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
+      }
             
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
