@@ -261,20 +261,16 @@ class AjaxController extends AppController {
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
         $subFamNode = $this->initNode($subFamilyItem, $labelFld);
-        error_log("INSIDE".PHP_EOL, 3, '../logs/error.log');
         if ( isset($subFamilyItem->Family) ) {
           $parentNodeId = "family".$subFamilyItem->Family;
           $childDropLevel = 0;
-          error_log("AAA $parentNodeId".PHP_EOL, 3, '../logs/error.log');
         } else
         if ( isset($subFamilyItem->Group) ) {
           $parentNodeId = "group".$subFamilyItem->Group;
           $childDropLevel = 1;
-          error_log("BBB $parentNodeId".PHP_EOL, 3, '../logs/error.log');
         } else {
           $parentNodeId = "category".$subFamilyItem->Category;
           $childDropLevel = 2;
-          error_log("CCC $parentNodeId".PHP_EOL, 3, '../logs/error.log');
         }
         $subFamNode->nodeInfo['parent'] = $parentNodeId;
         $nodes[$subFamNode->varname] = $subFamNode;
