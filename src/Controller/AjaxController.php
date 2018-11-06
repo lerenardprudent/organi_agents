@@ -256,7 +256,8 @@ class AjaxController extends AppController {
         $nodes[$relNode->varname] = $relNode;
         $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
-            
+       
+      $parentNodeId = null;
       if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
         $subFamNode = $this->initNode($subFamilyItem, $labelFld);
@@ -276,6 +277,7 @@ class AjaxController extends AppController {
         $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
       
+      $parentNodeId = null;
       if ( isset($item->Family) && !isset($nodes['family'.$item->Family]) ) {
         $familyItem = $item->family;
         $famNode = $this->initNode($familyItem, $labelFld);
@@ -292,6 +294,7 @@ class AjaxController extends AppController {
         $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
       
+      $parentNodeId = null;
       if ( isset($item->Group) && !isset($nodes['group'.$item->Group]) ) {
         $groupItem = $item->group;
         $groupNode = $this->initNode($groupItem, $labelFld);
@@ -300,6 +303,7 @@ class AjaxController extends AppController {
         $nodes[$groupNode->varname] = $groupNode;
       }
       
+      $parentNodeId = null;
       if ( !isset($nodes['category'.$item->Category]) ) {
         $categoryItem = $item->category;
         $cateNode = $this->initNode($categoryItem, $labelFld);
