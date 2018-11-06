@@ -354,6 +354,7 @@ class AjaxController extends AppController {
     }
     $jsConfigStr = "var ".implode(','.PHP_EOL, $jsConfigStrs).";";
     $outFile = 'js/tree-config3.js';
+    
     file_put_contents($outFile, $jsConfigStr);
     $ret->rootElem = $htmlRoot;
     $ret->treeConfigFilename = $outFile;
