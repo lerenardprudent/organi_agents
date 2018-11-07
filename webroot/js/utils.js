@@ -402,7 +402,7 @@ function showAjaxSpinner(show)
           $elem = $(res.rootElem);
           $elem.html("");
           $treeLegElem = $('#tree-legend');
-          var treeConfigFilePath = res.treeConfigFilename; ////
+          var treeConfigFilePath = res.treeConfigFilename; //
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
             new Treant(chart_config);
             if ( $treeLegElem.html().length == 0 ) {
