@@ -497,4 +497,9 @@ class AjaxController extends AppController {
       $childrenDropLevels[$nodeId] = [$dropLevel];
     }
   }
+  
+  function getTreeLegend()
+  {
+    $this->autoRender = true;
+  }
 }

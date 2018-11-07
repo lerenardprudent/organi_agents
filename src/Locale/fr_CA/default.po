@@ -47,3 +47,15 @@ msgstr "Tout désélectionner"
 
 msgid "agent_jobs"
 msgstr "{0} emplois codés"
+
+msgid "Legend"
+msgstr "Légende"
+
+msgid "canjem_agent"
+msgstr "Agent CANJEM"
+
+msgid "selected_agent"
+msgstr "Agent sélectionné"
+
+msgid "related_agent"
+msgstr "Agent connexe"

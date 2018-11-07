@@ -472,3 +472,27 @@ ul.chosen-results li {
 .minwidth-50 {
   min-width: 50%;
 }
+
+.tree-legend {
+  width: 16%;
+  margin: 0 auto;
+}
+
+.legend-row {
+  width: 100%;
+  padding: 3px;
+  text-align: left;
+  line-height: 20px;
+}
+
+.empty-square {
+  display: inline-block;
+  height: 20px;
+  width: 20px;
+  margin-right: 5px;
+  vertical-align: text-bottom;
+}
+
+.legend-row > .empty-square {
+  border-width: 1px;
+}

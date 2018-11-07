@@ -401,9 +401,19 @@ function showAjaxSpinner(show)
         if ( res.ok ) {
           $elem = $(res.rootElem);
           $elem.html("");
+          $treeLegElem = $('#tree-legend');
           var treeConfigFilePath = res.treeConfigFilename;
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
             new Treant(chart_config);
+            if ( $treeLegElem.html().length == 0 ) {
+              $.ajax({
+                url: $sel.data('urlGetTreeLegend'),
+                dataType: 'html',
+                success: function(legendHtml) {
+                  $treeLegElem.html(legendHtml);
+                }
+              })
+            }
           });
         }
       }
