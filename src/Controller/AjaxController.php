@@ -234,7 +234,7 @@ class AjaxController extends AppController {
       $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       
       $parentNodeId = null;
-      if ( isset($item->RelAgents) ) {
+      if ( isset($item->RelAgents) && !isset($nodes['agent'.$item->RelAgents['idchem']]) ) {
         $relItem = $item->RelAgents;
         $relNode = $this->initNode($relItem, $labelFld);
         if ( isset($relItem->SubFamily) ) {
@@ -255,6 +255,13 @@ class AjaxController extends AppController {
         $relNode->nodeInfo['parent'] = $parentNodeId;
         $nodes[$relNode->varname] = $relNode;
         $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
+      } else {
+        $htmlClass = $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'];
+        $classToAdd = 'related-agent';
+        if ( strpos($htmlClass, $classToAdd) === false ) {
+          $htmlClass .= " $classToAdd";
+          $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'] = $htmlClass;
+        }
       }
        
       $parentNodeId = null;
