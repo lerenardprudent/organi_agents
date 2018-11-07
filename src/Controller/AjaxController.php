@@ -234,33 +234,35 @@ class AjaxController extends AppController {
       $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       
       $parentNodeId = null;
-      if ( isset($item->RelAgents) && !isset($nodes['agent'.$item->RelAgents['idchem']]) ) {
-        $relItem = $item->RelAgents;
-        $relNode = $this->initNode($relItem, $labelFld);
-        if ( isset($relItem->SubFamily) ) {
-          $parentNodeId = "subFamily".$relItem->SubFamily;
-          $childDropLevel = 0;
-        } else
-        if ( isset($relItem->Family) ) {
-          $parentNodeId = "family".$relItem->Family;
-          $childDropLevel = 1;
-        } else
-        if ( isset($relItem->Group) ) {
-          $parentNodeId = "group".$relItem->Group;
-          $childDropLevel = 2;
+      if ( isset($item->RelAgents) ) {
+        if ( !isset($nodes['agent'.$item->RelAgents['idchem']]) ) {
+          $relItem = $item->RelAgents;
+          $relNode = $this->initNode($relItem, $labelFld);
+          if ( isset($relItem->SubFamily) ) {
+            $parentNodeId = "subFamily".$relItem->SubFamily;
+            $childDropLevel = 0;
+          } else
+          if ( isset($relItem->Family) ) {
+            $parentNodeId = "family".$relItem->Family;
+            $childDropLevel = 1;
+          } else
+          if ( isset($relItem->Group) ) {
+            $parentNodeId = "group".$relItem->Group;
+            $childDropLevel = 2;
+          } else {
+            $parentNodeId = "category".$relItem->Category;
+            $childDropLevel = 3;
+          }
+          $relNode->nodeInfo['parent'] = $parentNodeId;
+          $nodes[$relNode->varname] = $relNode;
+          $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
         } else {
-          $parentNodeId = "category".$relItem->Category;
-          $childDropLevel = 3;
-        }
-        $relNode->nodeInfo['parent'] = $parentNodeId;
-        $nodes[$relNode->varname] = $relNode;
-        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
-      } else {
-        $htmlClass = $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'];
-        $classToAdd = 'related-agent';
-        if ( strpos($htmlClass, $classToAdd) === false ) {
-          $htmlClass .= " $classToAdd";
-          $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'] = $htmlClass;
+          $htmlClass = $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'];
+          $classToAdd = 'related-agent';
+          if ( strpos($htmlClass, $classToAdd) === false ) {
+            $htmlClass .= " $classToAdd";
+            $nodes['agent'.$item->RelAgents['idchem']]->nodeInfo['HTMLclass'] = $htmlClass;
+          }
         }
       }
        
