@@ -404,28 +404,43 @@ class AjaxController extends AppController {
   {
     $ret = new \stdClass;
     $ret->ok = true;
-    $ret->count = 123;
     
     $curr = [];
     $chain = $_GET['chain'];
     $mod = $this->loadModel('AgentJobs');
     
     $allCounts = [];
+    $labelFlds = [];
     foreach ( $chain as $ch ) {
       $curr[] = $ch;
-      if ( count($curr) == 1 ) {
+      if ( !isset($jobs) ) {
+        $tbl = 'AgentJobs';
         $jobs = $mod->find()
-                    ->where(['AgentJobs.caid' => $ch]);
+                    ->where(["$tbl.caid" => $ch]);
         $res = $jobs->toArray();
       } else {     
-         $jobs = $jobs->join([
-            "AJ$ch" => ['table' => 'agent_jobs',
-                        'conditions' => ["AJ$ch.caid" => $ch, "AgentJobs.sjnid = AJ$ch.sjnid"]]
+        $tbl = "AJ$ch";
+        $jobs = $jobs->join([
+            $tbl => ['table' => 'agent_jobs',
+                     'conditions' => ["$tbl.caid" => $ch, "AgentJobs.sjnid = $tbl.sjnid"]]
                       ]);
       }
-      $count = $jobs->count();
-      $allCounts[$ch] = ['chain' => $curr, 'count' => $count];
+      $res = $jobs->select(['label' => "$tbl.lbl_".$this->lang, 'cnt' => 'COUNT(*)'])
+                    ->group('AgentJobs.caid')
+                    ->toArray();
+        
+      if ( !empty($res) ) {
+        $res = $res[0];      
+        $labels[$ch] = $res->label;
+        $crr = $curr;
+        array_pop($crr);
+        $allCounts[intval($ch)] = ['count' => intval($res->cnt),
+                           'lbl' => array_map(function($c) use ($labels) {
+                                      return $labels[$c];
+                                    }, $crr)];
+      }
     }
+    $ret->counts = $allCounts;
     $respBody = json_encode($ret);
     $this->response->body($respBody);
   }

@@ -189,7 +189,14 @@ function showAjaxSpinner(show)
                 data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
                 dataType: 'json',
                 success: function(countsJson) {
-                  console.log(countsJson)
+                  for ( var idchem in countsJson.counts ) {
+                    var cts = countsJson.counts[idchem];
+                    var countText = cts.count;
+                    if ( cts.lbl.length > 0 ) {
+                      countText += " (+ " + cts.lbl.join(' + ') + ")";
+                    }
+                    $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem }).append('<a href="#" title="' + countText + '">Décompte</a>')
+                  }
                 }
               })
           }
