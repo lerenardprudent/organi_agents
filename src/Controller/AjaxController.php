@@ -29,126 +29,6 @@ class AjaxController extends AppController {
     $this->setLang();
   }
   
-  public function getClassifications($classiType, $classiCode, $periodStart, $periodEnd, $hint = "")
-  {
-    $classiCode = strtolower($classiCode);
-    $hint = preg_replace('/\s+/', '%', $hint);
-    $tablePfx = 'classi';
-    $tblNameParts = [$tablePfx, $classiType, $classiCode];
-    $tableName = implode('_', $tblNameParts);
-    $camelizedTableName = Inflector::camelize($tableName);
-    $model = $this->loadModel($camelizedTableName);
-    $model->setPrimaryKey('code');
-    $titleCol = 'title_'.$this->lang;
-    $query = $model->find()->select(['code', $titleCol, 'description_'.$this->lang]);
-    if ( strlen($hint) > 0 ) {
-      $orCond = [ "$titleCol LIKE" => "%$hint%", 'code LIKE' => "%$hint%"];
-      $query = $query->where(['OR' => $orCond]);
-    }
-    $ios = $query->toArray();
-    $this->set(compact('ios', 'classiCode', 'periodStart', 'periodEnd'));
-    $this->set('lang', $this->lang);
-    $this->render();
-  }
-  
-  public function showExposureData($classiStnd, $code, $yearIn, $yearOut)
-  {
-    $jei = $this->loadModel('JobExposureIndices');
-    $this->paginate = ['limit' => 5];
-    
-    $classiInfo = $this->loadModel('Classifications')->get($classiStnd);
-    $titleCol = "title_".$this->lang;
-    $classiName = $classiInfo->$titleCol;
-    $classiType = $classiInfo->type;
-    $tablePfx = 'classi';
-    $tblNameParts = [$tablePfx, $classiType, $classiStnd];
-    $tableName = implode('_', $tblNameParts);
-    $camelizedTableName = Inflector::camelize($tableName);
-    $io = $this->loadModel($camelizedTableName)->setPrimaryKey('code')->get($code);
-    $jobTitle = $io->$titleCol;
-    $isMale = ['sex' => 'M'];
-    $isFemale = ['sex' => 'F'];
-    $concVar = 'c_final_cat';
-    $relVar = 'r_final';
-    $yearInVar = 'year_in';
-    $yearOutVar = 'year_out';
-    $cond = ["$classiStnd LIKE" => "$code%", "JobExposureIndices.subject_id is not null"];
-    if ( $yearIn && $yearIn != "-" ) {
-      $cond["$yearInVar >="] = $yearIn;
-    }
-    if ( $yearOut && $yearOut != "-" ) {
-      $cond["$yearOutVar <="] = $yearOut;
-    }
-    if ( isset($_GET) && isset($_GET['refine_agents']) && !empty($_GET['refine_agents']) ) {
-      $cond["chemical_agent_id IN"] = $_GET['refine_agents'];
-    }
-    $baseQuery = $jei->find()
-                    ->contain(['JobOccupationCodes' =>
-                                  function($q) use ($classiStnd) { return $q->select([strtolower($classiStnd)]); },
-                               'ChemicalAgents',
-                               'Subjects'])
-                    ->select(['chemical_agent_id',
-                              'ChemicalAgents.lbl_'.$this->lang,
-                              'ChemicalAgents.definition_en',
-                              'm_count' => $this->sqlSum($isMale),
-                              'f_count' => $this->sqlSum($isFemale),
-                              'm_c1_count' => $this->sqlSum(array_merge($isMale, [$concVar => '1'])),
-                              'm_c2_count' => $this->sqlSum(array_merge($isMale, [$concVar => '2'])),
-                              'f_c1_count' => $this->sqlSum(array_merge($isFemale, [$concVar => '1'])),
-                              'f_c2_count' => $this->sqlSum(array_merge($isFemale, [$concVar => '2'])),
-                              'm_r1_count' => $this->sqlSum(array_merge($isMale, [$relVar => '1'])),
-                              'm_r2_count' => $this->sqlSum(array_merge($isMale, [$relVar => '2'])),
-                              'f_r1_count' => $this->sqlSum(array_merge($isFemale, [$relVar => '1'])),
-                              'f_r2_count' => $this->sqlSum(array_merge($isFemale, [$relVar => '2'])),
-                              'm_freq' => "group_concat(case when sex = 'M' then f_final else '' end)",
-                              'f_freq' => "group_concat(case when sex = 'F' then f_final else '' end)"
-                        ])
-                    ->where($cond);
-                                  
-    $vc = ['JobExposureIndices.subject_id',
-                                'JobExposureIndices.job_no',
-                                $yearInVar,
-                                $yearOutVar,
-                                'Subjects.sex'];
-    $distinctJobs = $this->loadModel('JobOccupationCodes')->find()
-                      ->contain(['JobExposureIndices', 'Subjects'])
-                      ->select($vc)
-                      ->distinct($vc)
-                      /*->select(['m_count' => $this->sqlSum($isMale),
-                                'f_count' => $this->sqlSum($isFemale),
-                                $yearInVar => "min($yearInVar)",
-                                $yearOutVar => "max($yearOutVar)"])*/
-                      ->where($cond)
-                      ->toArray();
-    
-    $groupQuery = $baseQuery->group(['chemical_agent_id']);
-    
-    $errCode = null;
-    $errMsg = null;
-    try {
-      $jobExpoData = $groupQuery->toArray();
-    } catch ( \Exception $e ) {
-      $errCode = $e->getCode();
-      $errMsg = $e->getMessage();
-    }
-    $paginating = false;
-    
-    $lblFld = "lbl_".$this->lang;
-    $chemAgents = $this->loadModel('ChemicalAgents')->find('list', ['keyField' => 'id', 'valueField' => $lblFld])->order($lblFld)->toArray();
-    $this->set(compact('code', 'jobCounts', 'jobExpoData', 'classiStnd', 'classiName', 'paginating', 'errCode', 'errMsg', 'distinctJobs', 'yearInVar', 'yearOutVar', 'yearIn', 'yearOut', 'jobTitle', 'chemAgents'));
-    $this->set('lang', $this->lang);
-    $this->render();
-  }
-  
-  private function sqlSum($varVals)
-  {
-    $tmp = [];
-    array_walk($varVals, function($val, $var) use (&$tmp) { 
-            array_push($tmp, "$var = '$val'");
-    });
-    return "sum(case when (" . implode(' AND ', $tmp) . ") then 1 else 0 end)";
-  }
-  
   public function getTranslation($msgId)
   {
     $ret = new \stdClass;
@@ -156,18 +36,6 @@ class AjaxController extends AppController {
     $ret->msgid = $msgId;
     $ret->text = __($msgId);
     $respBody = json_encode($ret, JSON_FORCE_OBJECT);
-    $this->response->body($respBody);
-  }
-  
-  public function autocomplete($lang, $tableName = "chemical_agents")
-  {
-    $term = $_GET['term'];
-    $fld = "lbl_$lang";
-    $matches = [];
-    $camelizeedTable = Inflector::camelize($tableName);
-    $mod = $this->loadModel($tableName);
-    $matches = $mod->find('list', ['keyField' => "id", 'valueField' => $fld])->where(["$fld LIKE" => "%$term%" ])->toArray();
-    $respBody = json_encode($matches);
     $this->response->body($respBody);
   }
   
@@ -180,7 +48,7 @@ class AjaxController extends AppController {
     $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
     $selectFlds = [];
     foreach (array_merge(['Agents', 'RelAgents'], $modelsToContain) as $mod) {
-      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category', 'job_count'] as $memb) {
+      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
         $selectFlds[] = "$mod.$memb";
       }
     }
@@ -211,6 +79,8 @@ class AjaxController extends AppController {
     $rootNode = new \stdClass();
     $nodes = [$rootNodeName => $rootNode];
     
+    $canjemChains = [];
+    
     foreach ( $items as $item ) {
       $parentNodeId = null;
       $chemNode = $this->initNode($item, $labelFld, true);
@@ -232,6 +102,8 @@ class AjaxController extends AppController {
       $chemNode->nodeInfo['parent'] = $parentNodeId;
       $nodes[$chemNode->varname] = $chemNode;
       $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
+      
+      $currChain = [$item->idchem];
       
       $parentNodeId = null;
       if ( isset($item->RelAgents) && !isset($nodes['agent'.$item->RelAgents['idchem']]) ) {
@@ -259,7 +131,10 @@ class AjaxController extends AppController {
       } 
        
       $parentNodeId = null;
-      if ( isset($item->SubFamily) && !isset($nodes['subFamily'.$item->SubFamily]) ) {
+      if ( isset($item->SubFamily) ) {
+        if ( strpos($item->sub_family->level, "idchem") !== false ) { $currChain[] = $item->SubFamily; }
+        
+        if ( !isset($nodes['subFamily'.$item->SubFamily]) ) {
         $subFamilyItem = $item->sub_family;
         $subFamNode = $this->initNode($subFamilyItem, $labelFld);
         if ( isset($subFamilyItem->Family) ) {
@@ -277,39 +152,56 @@ class AjaxController extends AppController {
         $nodes[$subFamNode->varname] = $subFamNode;
         $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
+    }
       
       $parentNodeId = null;
-      if ( isset($item->Family) && !isset($nodes['family'.$item->Family]) ) {
-        $familyItem = $item->family;
-        $famNode = $this->initNode($familyItem, $labelFld);
+      if ( isset($item->Family) ) {
+        if ( strpos($item->family->level, "idchem") !== false ) { $currChain[] = $item->Family; }
         
-        if ( isset($familyItem->Group) ) {
-          $parentNodeId = "group".$familyItem->Group;
-          $childDropLevel = 0;
-        } else {
-          $parentNodeId = "category".$familyItem->Category;
-          $childDropLevel = 1;
+        if ( !isset($nodes['family'.$item->Family]) ) {
+          $familyItem = $item->family;
+          $famNode = $this->initNode($familyItem, $labelFld);
+
+          if ( isset($familyItem->Group) ) {
+            $parentNodeId = "group".$familyItem->Group;
+            $childDropLevel = 0;
+          } else {
+            $parentNodeId = "category".$familyItem->Category;
+            $childDropLevel = 1;
+          }
+          $famNode->nodeInfo['parent'] = $parentNodeId;
+          $nodes[$famNode->varname] = $famNode;
+          $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
         }
-        $famNode->nodeInfo['parent'] = $parentNodeId;
-        $nodes[$famNode->varname] = $famNode;
-        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
       
       $parentNodeId = null;
-      if ( isset($item->Group) && !isset($nodes['group'.$item->Group]) ) {
-        $groupItem = $item->group;
-        $groupNode = $this->initNode($groupItem, $labelFld);
-        $parentNodeId = "category".$familyItem->Category;
-        $groupNode->nodeInfo['parent'] = $parentNodeId;
-        $nodes[$groupNode->varname] = $groupNode;
+      if ( isset($item->Group) ) {
+        if ( strpos($item->group->level, "idchem") !== false ) { $currChain[] = $item->Group; }
+        
+        if ( !isset($nodes['group'.$item->Group]) ) {
+          $groupItem = $item->group;
+          $groupNode = $this->initNode($groupItem, $labelFld);
+          $parentNodeId = "category".$familyItem->Category;
+          $groupNode->nodeInfo['parent'] = $parentNodeId;
+          $nodes[$groupNode->varname] = $groupNode;
+        }
       }
       
       $parentNodeId = null;
-      if ( !isset($nodes['category'.$item->Category]) ) {
-        $categoryItem = $item->category;
-        $cateNode = $this->initNode($categoryItem, $labelFld);
-        $cateNode->nodeInfo['parent'] = $rootNodeName;
-        $nodes[$cateNode->varname] = $cateNode;
+      if ( isset($item->Category) ) {
+        if ( strpos($item->category->level, "idchem") !== false ) { $currChain[] = $item->Category; }
+        
+        if ( !isset($nodes['category'.$item->Category]) ) {
+          $categoryItem = $item->category;
+          $cateNode = $this->initNode($categoryItem, $labelFld);
+          $cateNode->nodeInfo['parent'] = $rootNodeName;
+          $nodes[$cateNode->varname] = $cateNode;
+        }
+      }
+      
+      if ( !isset($canjemChains[$item->idchem] ) ) {
+        $canjemChains[$item->idchem] = $currChain;
       }
     }
     
@@ -359,6 +251,7 @@ class AjaxController extends AppController {
     file_put_contents($outFile, $jsConfigStr);
     $ret->rootElem = $htmlRoot;
     $ret->treeConfigFilename = $outFile;
+    $ret->chains = $canjemChains;
     $respBody = json_encode($ret);
     $this->response->body($respBody);
   }
@@ -418,9 +311,12 @@ class AjaxController extends AppController {
     }
     $node->varname = $pfx.$data->idchem;
     $nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
-    if ( isset($data->job_count) ) {
-      $nodeInfo['text']['desc'] = __("agent_jobs", [$data->job_count]);
+    if ( $canjemOrig && !$relatedNode ) {
+      $nodeInfo['text']['contact'] = $data->idchem;
     }
+    //if ( isset($data->job_count) ) {
+    //  $nodeInfo['text']['desc'] = __("agent_jobs", [$data->job_count]);
+    //}
     $node->nodeInfo = $nodeInfo;
     
     $members = ["SubFamily", "Family", "Group", "Category"];
@@ -502,5 +398,35 @@ class AjaxController extends AppController {
   function getTreeLegend()
   {
     $this->autoRender = true;
+  }
+  
+  public function getJobCounts()
+  {
+    $ret = new \stdClass;
+    $ret->ok = true;
+    $ret->count = 123;
+    
+    $curr = [];
+    $chain = $_GET['chain'];
+    $mod = $this->loadModel('AgentJobs');
+    
+    $allCounts = [];
+    foreach ( $chain as $ch ) {
+      $curr[] = $ch;
+      if ( count($curr) == 1 ) {
+        $jobs = $mod->find()
+                    ->where(['AgentJobs.caid' => $ch]);
+        $res = $jobs->toArray();
+      } else {     
+         $jobs = $jobs->join([
+            "AJ$ch" => ['table' => 'agent_jobs',
+                        'conditions' => ["AJ$ch.caid" => $ch, "AgentJobs.sjnid = AJ$ch.sjnid"]]
+                      ]);
+      }
+      $count = $jobs->count();
+      $allCounts[$ch] = ['chain' => $curr, 'count' => $count];
+    }
+    $respBody = json_encode($ret);
+    $this->response->body($respBody);
   }
 }

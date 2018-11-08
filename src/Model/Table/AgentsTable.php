@@ -36,6 +36,9 @@ class AgentsTable extends Table
                                             'bindingKey' => 'idchem' ],
                          'Categories' =>  [ 'className' => 'categs',
                                             'foreignKey' => 'Category',
+                                            'bindingKey' => 'idchem' ] ],
+        'hasMany'   => [ 'Jobs' =>        [ 'className' => 'agent_jobs',
+                                            'foreignKey' => 'chemical_agent_id',
                                             'bindingKey' => 'idchem' ] ]
       ]);
     }

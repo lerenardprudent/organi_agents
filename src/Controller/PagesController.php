@@ -64,6 +64,8 @@ class PagesController extends AppController
                            ->order($lblFld)->toArray();
         
         $this->set(compact('page', 'subpage', 'chemAgents'));
+        $selectedAgents = isset($_GET['agents']) ? explode(',', $_GET['agents']) : [];
+        $this->set(compact('page', 'subpage', 'chemAgents', 'selectedAgents'));
         $this->set('lang', $this->lang);
 
         try {

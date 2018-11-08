@@ -496,3 +496,7 @@ ul.chosen-results li {
 .legend-row > .empty-square {
   border-width: 1px;
 }
+
+div.my-chosen {
+  display: none;
+}

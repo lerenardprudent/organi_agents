@@ -77,8 +77,8 @@ $this->Form->templates([
   
   <div class="row header-title">
     <div class="columns large-12 text-center">
-      <div class="inline-b width-90pc">
-        <?= $this->Form->input('choice_agents', ['options' => $chemAgents, 'label' => false, 'type' => 'select', 'class' => 'chosen-select', 'templateVars' => ['extraclasses' => 'inline-b minwidth-50'], 'multiple' => true, 'data-placeholder' => __("select_agents"), 'data-no-results-text' => __("no_agents_found"), 'data-unselect-all-text' => __("Unselect all"), 'data-selected' => [], 'data-url-build-tree-config' => $this->Url->build(['controller' => 'Ajax', 'action' => 'build-tree-config']), 'data-url-get-tree-legend' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-tree-legend'])]) ?>
+      <div class="inline-b width-90pc my-chosen">
+        <?= $this->Form->input('choice_agents', ['options' => $chemAgents, 'label' => false, 'type' => 'select', 'class' => 'chosen-select', 'templateVars' => ['extraclasses' => 'inline-b minwidth-50'], 'multiple' => true, 'data-placeholder' => __("select_agents"), 'data-no-results-text' => __("no_agents_found"), 'data-unselect-all-text' => __("Unselect all"), 'data-init-selected' => $selectedAgents, 'data-selected' => [], 'data-url-build-tree-config' => $this->Url->build(['controller' => 'Ajax', 'action' => 'build-tree-config']), 'data-url-get-tree-legend' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-tree-legend']), 'data-url-get-job-counts' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-job-counts'])]) ?>
         <?= $this->Form->button(__('draw_hierarchy'), ['name' => 'draw-button', 'type' => 'button', 'class' => 'draw-tree my-button', 'disabled' => true, 'templateVars' => ['extraclasses' => 'inline-b']]) ?>
       </div>
     </div>
