@@ -407,25 +407,27 @@ class AjaxController extends AppController {
     
     $curr = [];
     $chain = $_GET['chain'];
-    $mod = $this->loadModel('AgentJobs');
     
     $allCounts = [];
     $labelFlds = [];
+    
+    $tbl = 'dummy';
+        $mod = $this->loadModel($tbl);
+        $jobs = $mod->find();
+        $first = true;
+        $defTblName = 'AgentJobs';
+        
     foreach ( $chain as $ch ) {
       $curr[] = $ch;
-      if ( !isset($jobs) ) {
-        $tbl = 'AgentJobs';
-        $jobs = $mod->find()
-                    ->where(["$tbl.caid" => $ch]);
-      } else {     
-        $tbl = "AJ$ch";
-        $jobs = $jobs->join([
-            $tbl => ['table' => "(select * from agent_jobs where caid = $ch)",
-                     'conditions' => ["AgentJobs.sjnid = $tbl.sjnid"]]
-                      ]);
-      }
+      
+      $tbl = $first ? $defTblName : "AJ$ch";
+      $tableInfo = ['table' => "(select * from agent_jobs where caid = $ch)"];
+      $tableInfo['conditions'] = $first ? "1" : "$defTblName.sjnid = $tbl.sjnid";
+      $first = false;
+      $joinInfo = [$tbl => $tableInfo];
+      $jobs = $jobs->join($joinInfo);
       $res = $jobs->select(['label' => "$tbl.lbl_".$this->lang, 'cnt' => 'COUNT(*)'])
-                    ->group('AgentJobs.caid')
+                    ->group("$defTblName.caid")
                     ->toArray();
         
       if ( !empty($res) ) {
