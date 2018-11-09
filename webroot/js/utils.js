@@ -113,7 +113,7 @@ function showAjaxSpinner(show)
     
     if ( $rootElem.is('select') ) {
       if ( $rootElem.data('initSelected') ) {
-        var initAgents = $rootElem.data('initSelected').split(' ');
+        var initAgents = $rootElem.data('initSelected').toString().split(' ');
         $rootElem.data('selected', initAgents);
         $rootElem.find('option').filter(function() { return $.inArray($(this).val(), initAgents) >= 0; }).prop('selected', true);
         if ( initAgents.length > 0 ) {
@@ -183,22 +183,33 @@ function showAjaxSpinner(show)
               })
             }
           });
+          jcLabel = getTranslation('jobs_coded');
           for ( var idc in res.chains ) {
             $.ajax({
-                url: $sel.data('urlGetJobCounts'),
-                data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
-                dataType: 'json',
-                success: function(countsJson) {
-                  for ( var idchem in countsJson.counts ) {
-                    var cts = countsJson.counts[idchem];
-                    var countText = cts.count;
-                    if ( cts.lbl.length > 0 ) {
-                      countText += " (+ " + cts.lbl.join(' + ') + ")";
+              url: $sel.data('urlGetJobCounts'),
+              data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
+              dataType: 'json',
+              success: function(countsJson) {
+                for ( var idchem in countsJson.counts ) {
+                  var cts = countsJson.counts[idchem];
+                  var countText = "";
+                  if ( cts.lbl.length > 0 ) {
+                    countText += "+ " + cts.lbl.join(' + ');
+                  }
+                  var decompteHtml = "<span class='job-count" + (countText.length == 0 ? " empty-chain" : "" ) + "' title='" + countText + "'>" + cts.count + "</span>";
+                  $contact = $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
+                  if ( $contact.length == 1 ) {
+                    $contact.attr('data-idchem', idchem);
+                    $contact.html("<span class='job-count-lbl'>" + jcLabel + "</span>" + decompteHtml);
+                  } else {
+                    $contact = $('.node-contact[data-idchem=' + idchem + ']');
+                    if ( $contact.length == 1 ) {
+                      $contact.append(",&nbsp;" + decompteHtml);
                     }
-                    $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem }).append('<a href="#" title="' + countText + '">Décompte</a>')
                   }
                 }
-              })
+              }
+            })
           }
         }
       }

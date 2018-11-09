@@ -29,6 +29,12 @@ $description = __("title");
 $this->Form->templates([
     'inputContainer' => '<div class="input {{type}}{{required}} {{extraclasses}}">{{content}}</div>'
   ]);
+
+$pTransl = new \stdClass();
+foreach ( $preTranslate as $pre ) {
+  $lid = "$lang:$pre";
+  $pTransl->$lid = __($pre);
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -65,7 +71,7 @@ $this->Form->templates([
 <body class="home" data-lang='<?= $lang ?>'>
   <header class="row">
     <div class='links'>
-      <?= $this->Html->link($currLang == "en" ? "Français" : "English", "/?lang=".($currLang == "en" ? "fr" : "en"), ['class' => 'lang-link', 'data-trans-url-base' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-translation']), 'data-translations' => "{}" ]) ?>
+      <?= $this->Html->link($currLang == "en" ? "Français" : "English", "/?lang=".($currLang == "en" ? "fr" : "en"), ['class' => 'lang-link', 'data-trans-url-base' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-translation']), 'data-translations' => json_encode($pTransl) ]) ?>
     </div>
   </header>
 

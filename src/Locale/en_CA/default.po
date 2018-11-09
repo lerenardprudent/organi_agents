@@ -39,3 +39,6 @@ msgstr "Selected agent"
 
 msgid "related_agent"
 msgstr "Related agent"
+
+msgid "jobs_coded"
+msgstr "Jobs coded:"

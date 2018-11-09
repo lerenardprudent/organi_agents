@@ -500,3 +500,18 @@ ul.chosen-results li {
 div.my-chosen {
   display: none;
 }
+
+span.job-count-lbl {
+  font-style: italic;
+}
+
+span.job-count {
+  margin-left: 3px;
+  font-weight: bold;
+  font-size: 15px;
+  color: blue;
+}
+
+span.job-count:not(.empty-chain) {
+  cursor: help;
+}
