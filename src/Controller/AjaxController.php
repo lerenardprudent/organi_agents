@@ -420,10 +420,9 @@ class AjaxController extends AppController {
       } else {     
         $tbl = "AJ$ch";
         $jobs = $jobs->join([
-            $tbl => ['table' => 'agent_jobs',
-                     'conditions' => ["$tbl.caid" => $ch, "AgentJobs.sjnid = $tbl.sjnid"]]
+            $tbl => ['table' => "(select * from agent_jobs where caid = $ch)",
+                     'conditions' => ["AgentJobs.sjnid = $tbl.sjnid"]]
                       ]);
-        $res = $jobs->toArray();
       }
       $res = $jobs->select(['label' => "$tbl.lbl_".$this->lang, 'cnt' => 'COUNT(*)'])
                     ->group('AgentJobs.caid')
