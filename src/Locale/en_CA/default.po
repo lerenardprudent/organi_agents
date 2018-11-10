@@ -45,3 +45,6 @@ msgstr "Jobs coded:"
 
 msgid "codes_missing"
 msgstr "jobs coded than for"
+
+msgid "codes_match"
+msgstr "Jobs coded match those for"

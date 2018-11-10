@@ -65,3 +65,6 @@ msgstr "Emplois codés :"
 
 msgid "codes_missing"
 msgstr "emplois codés que pour"
+
+msgid "codes_match"
+msgstr "Emplois codés concordent avec ceux pour"

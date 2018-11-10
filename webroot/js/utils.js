@@ -201,9 +201,12 @@ function showAjaxSpinner(show)
                   var countText = "";
                   var countMismatch = prevCount > 0 && count != prevCount;
                   if ( countMismatch ) {
-                    countText += "-" + (prevCount - count) + " " + getTranslation('codes_missing') + " {" + cts.lbl.join(' & ') + "}";
+                    countText = "-" + (prevCount - count) + " " + getTranslation('codes_missing') + " {" + cts.lbl.join(' & ') + "}";
+                  } else
+                  if ( cts.lbl.length > 0 ) {
+                    countText = getTranslation('codes_match') + " {" + cts.lbl.join(' & ') + "}";
                   }
-                  var noTooltip = countText.length == 0 || !countMismatch;
+                  var noTooltip = countText.length == 0;
                   var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : "" ) + "' title='" + countText + "'>" + count + "</span>";
                   $contact = $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
                   if ( $contact.length == 1 ) {
