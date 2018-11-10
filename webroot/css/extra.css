@@ -505,6 +505,10 @@ span.job-count-lbl {
   font-style: italic;
 }
 
+span.job-count.count-mismatch {
+  color: red;
+}
+
 span.job-count {
   margin-left: 3px;
   font-weight: bold;

@@ -42,3 +42,6 @@ msgstr "Related agent"
 
 msgid "jobs_coded"
 msgstr "Jobs coded:"
+
+msgid "codes_missing"
+msgstr "jobs coded than for"

@@ -435,10 +435,9 @@ class AjaxController extends AppController {
         $labels[$ch] = $res->label;
         $crr = $curr;
         array_pop($crr);
-        $allCounts[intval($ch)] = ['count' => intval($res->cnt),
-                           'lbl' => array_map(function($c) use ($labels) {
-                                      return $labels[$c];
-                                    }, $crr)];
+        $allCounts[] =['idchem' => $ch,
+                       'count' => intval($res->cnt),
+                       'lbl' => array_map(function($c) use ($labels) { return $labels[$c]; }, $crr)];
       }
     }
     $ret->counts = $allCounts;

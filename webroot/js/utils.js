@@ -190,13 +190,21 @@ function showAjaxSpinner(show)
               data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
               dataType: 'json',
               success: function(countsJson) {
-                for ( var idchem in countsJson.counts ) {
-                  var cts = countsJson.counts[idchem];
-                  var countText = "";
-                  if ( cts.lbl.length > 0 ) {
-                    countText += "+ " + cts.lbl.join(' + ');
+                prevCount = -1;
+                count = -1;
+                countsJson.counts.forEach(function(cts) {
+                  var idchem = cts.idchem;
+                  if ( count >= 0 ) {
+                    prevCount = count;
                   }
-                  var decompteHtml = "<span class='job-count" + (countText.length == 0 ? " empty-chain" : "" ) + "' title='" + countText + "'>" + cts.count + "</span>";
+                  count = cts.count;
+                  var countText = "";
+                  var countMismatch = prevCount > 0 && count != prevCount;
+                  if ( countMismatch ) {
+                    countText += "-" + (prevCount - count) + " " + getTranslation('codes_missing') + " {" + cts.lbl.join(' & ') + "}";
+                  }
+                  var noTooltip = countText.length == 0 || !countMismatch;
+                  var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : "" ) + "' title='" + countText + "'>" + count + "</span>";
                   $contact = $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
                   if ( $contact.length == 1 ) {
                     $contact.attr('data-idchem', idchem);
@@ -207,9 +215,9 @@ function showAjaxSpinner(show)
                       $contact.append(",&nbsp;" + decompteHtml);
                     }
                   }
-                }
+                });
               }
-            })
+            });
           }
         }
       }

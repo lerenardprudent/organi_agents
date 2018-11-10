@@ -62,3 +62,6 @@ msgstr "Agent connexe"
 
 msgid "jobs_coded"
 msgstr "Emplois codés :"
+
+msgid "codes_missing"
+msgstr "emplois codés que pour"
