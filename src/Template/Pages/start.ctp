@@ -93,7 +93,32 @@ foreach ( $preTranslate as $pre ) {
   <div class='agents'>  
   </div>
   <div id="tree-root"></div>
-  <div id='tree-legend'></div>
+  <div id='tree-legend'>
+    <fieldset>
+      <legend><?= __("Legend") ?></legend>
+      <div class='legend-row'>
+        <div class='empty-square blue'></div>
+        <div class="legend-desc"><?= __("canjem_agent") ?></div>
+      </div>
+      <div class='legend-row'>
+        <div class='empty-square selected-agent'></div>
+        <div class="legend-desc"><?= __("selected_agent") ?></div>
+      </div>
+      <div class='legend-row'>
+        <div class='empty-square related-agent'></div>
+        <div class="legend-desc"><?= __("related_agent") ?></div>
+      </div>
+      <div class='legend-row'>
+        <div class='empty-square'><span class='job-count count-ok'>99</span></div>
+        <div class="legend-desc"><?= __("legend_count_ok") ?></div>
+      </div>
+      <div class='legend-row'>
+        <div class='empty-square'><span class='job-count count-mismatch'>99</span></div>
+        <div class="legend-desc"><?= __("legend_count_mismatch") ?></div>
+      </div>
+    </fieldset>
+  </div>
+    
   
   <div id="loading-ajax" style="display:none">
     <span class="loading-info"></span>

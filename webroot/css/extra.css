@@ -473,15 +473,16 @@ ul.chosen-results li {
   min-width: 50%;
 }
 
-.tree-legend {
-  width: 16%;
+#tree-legend {
+  display: none;
+  width: 30%;
   margin: 0 auto;
+  text-align: center;
 }
 
 .legend-row {
-  width: 100%;
+  display: block;
   padding: 3px;
-  text-align: left;
   line-height: 20px;
 }
 
@@ -490,7 +491,7 @@ ul.chosen-results li {
   height: 20px;
   width: 20px;
   margin-right: 5px;
-  vertical-align: text-bottom;
+  vertical-align: top;
 }
 
 .legend-row > .empty-square {
@@ -509,13 +510,21 @@ span.job-count.count-mismatch {
   color: red;
 }
 
+span.job-count.count-ok {
+  color: blue;
+}
+
 span.job-count {
   margin-left: 3px;
   font-weight: bold;
   font-size: 15px;
-  color: blue;
 }
 
 span.job-count:not(.empty-chain) {
   cursor: help;
+}
+
+div.legend-desc {
+  display: inline-block;
+  text-align: left;
 }

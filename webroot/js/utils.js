@@ -167,24 +167,15 @@ function showAjaxSpinner(show)
       success: function(data) {
         var res = JSON.parse(data);
         if ( res.ok ) {
+          $('#tree-legend').show();
           if ( !undef(res.updatedUrl) ) {
             window.history.pushState("Details", "Title", res.updatedUrl);
           }
           $elem = $(res.rootElem);
           $elem.html("");
-          $treeLegElem = $('#tree-legend');
           var treeConfigFilePath = res.treeConfigFilename; //
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
             new Treant(chart_config);
-            if ( $treeLegElem.html().length == 0 ) {
-              $.ajax({
-                url: $sel.data('urlGetTreeLegend'),
-                dataType: 'html',
-                success: function(legendHtml) {
-                  $treeLegElem.html(legendHtml);
-                }
-              })
-            }
           });
           jcLabel = getTranslation('jobs_coded');
           for ( var idc in res.chains ) {
@@ -210,7 +201,7 @@ function showAjaxSpinner(show)
                     countText = getTranslation('codes_match') + " {" + cts.lbl.join(' & ') + "}";
                   }
                   var noTooltip = countText.length == 0;
-                  var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : "" ) + "' title='" + countText + "'>" + count + "</span>";
+                  var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : " count-ok" ) + "' title='" + countText + "'>" + count + "</span>";
                   $contact = $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
                   if ( $contact.length == 1 ) {
                     $contact.attr('data-idchem', idchem);

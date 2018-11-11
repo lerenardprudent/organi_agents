@@ -51,3 +51,9 @@ msgstr "Jobs coded match those for"
 
 msgid "oppo_lang_en"
 msgstr "Français"
+
+msgid "legend_count_ok"
+msgstr "Total number of jobs coded for the item"
+
+msgid "legend_count_mismatch"
+msgstr "Total number of jobs coded for the item<br>(where total does not match total of child item)"
