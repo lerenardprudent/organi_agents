@@ -69,5 +69,5 @@ msgstr "emplois codés que pour"
 msgid "codes_match"
 msgstr "Emplois codés concordent avec ceux pour"
 
-msgid  "oppo_lang_fr"
+msgid "oppo_lang_fr"
 msgstr "English"
