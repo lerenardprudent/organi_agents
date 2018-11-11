@@ -49,5 +49,5 @@ msgstr "jobs coded than for"
 msgid "codes_match"
 msgstr "Jobs coded match those for"
 
-msgid  "oppo_lang_en"
+msgid "oppo_lang_en"
 msgstr "Français"
