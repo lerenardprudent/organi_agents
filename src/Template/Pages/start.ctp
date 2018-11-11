@@ -68,10 +68,10 @@ foreach ( $preTranslate as $pre ) {
     
     <link href="https://fonts.googleapis.com/css?family=Raleway:500i|Roboto:300,400,700|Roboto+Mono" rel="stylesheet">
 </head>
-<body class="home" data-lang='<?= $lang ?>'>
+<body class="home" data-lang='<?= $lang ?>' data-agents-param='<?= $agentsParam ?>' data-lang-param='<?= $langParam ?>'>
   <header class="row">
     <div class='links'>
-      <?= $this->Html->link($currLang == "en" ? "Français" : "English", "/?lang=".($currLang == "en" ? "fr" : "en"), ['class' => 'lang-link', 'data-trans-url-base' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-translation']), 'data-translations' => json_encode($pTransl) ]) ?>
+      <?= $this->Html->link(__("oppo_lang_$currLang"), '#', ['class' => 'lang-link', 'data-trans-url-base' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-translation']), 'data-translations' => json_encode($pTransl), 'data-lang' => $currLang == "en" ? "fr" : "en" ]) ?>
     </div>
   </header>
 

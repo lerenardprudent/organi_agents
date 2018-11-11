@@ -163,10 +163,13 @@ function showAjaxSpinner(show)
     $.ajax({
       method: 'GET',
       url: $sel.data('urlBuildTreeConfig'),
-      data: $.map(agents, function(agentId) { return "agents[]="+agentId; }).join('&'),
+      data: $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&'),
       success: function(data) {
         var res = JSON.parse(data);
         if ( res.ok ) {
+          if ( !undef(res.updatedUrl) ) {
+            window.history.pushState("Details", "Title", res.updatedUrl);
+          }
           $elem = $(res.rootElem);
           $elem.html("");
           $treeLegElem = $('#tree-legend');

@@ -43,7 +43,7 @@ class AjaxController extends AppController {
   {
     $ret = new \stdClass;
     $ret->ok = true;
-    $agentIds = $_GET['agents'];
+    $agentIds = $_GET[$this->agents_param];
     $labelFld = "label".Inflector::camelize($this->lang);
     $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
     $selectFlds = [];
@@ -252,6 +252,20 @@ class AjaxController extends AppController {
     $ret->rootElem = $htmlRoot;
     $ret->treeConfigFilename = $outFile;
     $ret->chains = $canjemChains;
+    
+    $refererUrl = $_SERVER['HTTP_REFERER'];
+    if ( strpos($refererUrl, $this->agents_param."=") === false ) {
+      $parsedUrl = parse_url($refererUrl);
+      if ( !isset($parsedUrl['query']) ) {
+        $parsedUrl['query'] = '';
+      } else {
+        $parsedUrl['query'] .= '&';
+      }
+      $parsedUrl['query'] .= $this->agents_param."=".urlencode(implode(',', $agentIds));
+      $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
+    }
+    
+    
     $respBody = json_encode($ret);
     $this->response->body($respBody);
   }

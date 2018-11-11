@@ -7,5 +7,5 @@ subFamily530199 = {text:{name:"SousFamille",title:"Hydrocarbures aromatiques mon
 agent430104 = {text:{name:"Agent",title:"Styr\u00e8ne"},HTMLclass:"blue related-agent",parent:subFamily530199},
 agent430103 = {text:{name:"Agent",title:"Xyl\u00e8ne"},HTMLclass:"blue related-agent",parent:subFamily530199},
 agent430102 = {text:{name:"Agent",title:"Tolu\u00e8ne",contact:430102},HTMLclass:"blue selected-agent",parent:subFamily530199},
-agent430101 = {text:{name:"Agent",title:"Benz\u00e8ne",contact:430101},HTMLclass:"blue selected-agent",parent:subFamily530199},
+agent430101 = {text:{name:"Agent",title:"Benz\u00e8ne"},HTMLclass:"blue related-agent",parent:subFamily530199},
 chart_config = [config, root, category600020, group660421, family460003, subFamily530199, agent430104, agent430103, agent430102, agent430101];
