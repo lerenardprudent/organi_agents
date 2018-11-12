@@ -68,3 +68,12 @@ msgstr "emplois codés que pour"
 
 msgid "codes_match"
 msgstr "Emplois codés concordent avec ceux pour"
+
+msgid "oppo_lang_fr"
+msgstr "English"
+
+msgid "legend_count_ok"
+msgstr "Nombre total d'emplois codés pour cet élément"
+
+msgid "legend_count_mismatch"
+msgstr "Nombre total d'emplois codés pour cet élément<br>(où le total ne concorde pas avec celui de l'élément enfant)"

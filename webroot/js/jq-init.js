@@ -20,8 +20,25 @@ function initElems()
 
   $('.lang-link').click(function(e) {
     e.preventDefault();
-    var url = $(this).attr('href');
-    window.location.href = url;
+    var newLang = $(this).data('lang');
+    var currUrl = window.location.href;
+    var langParam = $('body').data('langParam');
+    var newSubstr = langParam+'='+newLang;
+    var newUrl;
+    if ( currUrl.indexOf(langParam+'=') > 0 ) {
+       newUrl = currUrl.replace(new RegExp(langParam+'='+"(fr|en)"), newSubstr);
+    } else {
+      var match = window.location.href.match(/\?(.)?/);
+      newUrl = currUrl;
+      if ( match == null ) {
+        newUrl += '?';
+      } else
+      if ( !undef(match[1]) ) {
+        newUrl += '&';
+      }
+      newUrl += newSubstr;
+    }
+    window.location.href = newUrl;
   })
 
   function tog(v){return v?'addClass':'removeClass';} 
