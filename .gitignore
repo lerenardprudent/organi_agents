@@ -39,4 +39,4 @@ nbproject/*
 # Sass preprocessor
 .sass-cache/
 
-js/tree-config*.js
+/webroot/js/tree-config*.js
