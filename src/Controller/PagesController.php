@@ -66,7 +66,7 @@ class PagesController extends AppController
         $this->set(compact('page', 'subpage', 'chemAgents'));
         $selectedAgents = isset($_GET[$this->agents_param]) ? explode(',', $_GET[$this->agents_param]) : [];
         
-        $preTranslate = ['jobs_coded', 'codes_missing', 'codes_match'];
+        $preTranslate = ['jobs_coded', 'codes_missing', 'codes_match', 'pre_label', 'post_label'];
         $this->set(compact('page', 'subpage', 'chemAgents', 'selectedAgents', 'preTranslate'));
         $this->set('lang', $this->lang);
         $this->set('agentsParam', $this->agents_param);

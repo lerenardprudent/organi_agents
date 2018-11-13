@@ -61,7 +61,7 @@ msgid "related_agent"
 msgstr "Agent connexe"
 
 msgid "jobs_coded"
-msgstr "Emplois codés :"
+msgstr "Emplois codés"
 
 msgid "codes_missing"
 msgstr "emplois codés que pour"
@@ -80,3 +80,9 @@ msgstr "Nombre total d'emplois codés pour cet élément<br>(où le total ne con
 
 msgid "use_preauto"
 msgstr "Utiliser les données pre-auto"
+
+msgid "pre_label"
+msgstr "Pré"
+
+msgid "post_label"
+msgstr "Post"

@@ -41,7 +41,7 @@ msgid "related_agent"
 msgstr "Related agent"
 
 msgid "jobs_coded"
-msgstr "Jobs coded:"
+msgstr "Jobs coded"
 
 msgid "codes_missing"
 msgstr "jobs coded than for"
@@ -60,3 +60,9 @@ msgstr "Total number of jobs coded for the item<br>(where total does not match t
 
 msgid "use_preauto"
 msgstr "Use pre-auto data"
+
+msgid "pre_label"
+msgstr "Pre"
+
+msgid "post_label"
+msgstr "Post"

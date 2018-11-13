@@ -503,6 +503,15 @@ div.my-chosen {
 
 span.job-count-lbl {
   font-style: italic;
+  display: inline-block;
+}
+
+body[data-lang="fr"] span.job-count-lbl {
+  min-width: 130px;
+}
+
+body[data-lang="en"] span.job-count-lbl {
+  min-width: 110px;
 }
 
 span.job-count.count-mismatch {

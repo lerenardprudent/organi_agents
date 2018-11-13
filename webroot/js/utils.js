@@ -179,40 +179,26 @@ function showAjaxSpinner(show)
             new Treant(chart_config);
           });
           jcLabel = getTranslation('jobs_coded');
+          preLabel = getTranslation('pre_label');
+          postLabel = getTranslation('post_label');
+          
           for ( var idc in res.chains ) {
             $.ajax({
               url: $sel.data('urlGetJobCounts'),
               data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
               dataType: 'json',
               success: function(countsJson) {
-                prevCount = -1;
-                count = -1;
+                prevCountPre = -1;
+                prevCountPost = -1;
+                countPre = -1;
+                countPost = -1;
                 countsJson.counts.forEach(function(cts) {
-                  var idchem = cts.idchem;
-                  if ( count >= 0 ) {
-                    prevCount = count;
-                  }
-                  count = cts.count_pre;
-                  var countText = "";
-                  var countMismatch = prevCount > 0 && count != prevCount;
-                  if ( countMismatch ) {
-                    countText = "-" + (prevCount - count) + " " + getTranslation('codes_missing') + " {" + cts.lbl.join(' & ') + "}";
-                  } else
-                  if ( cts.lbl.length > 0 ) {
-                    countText = getTranslation('codes_match') + " {" + cts.lbl.join(' & ') + "}";
-                  }
-                  var noTooltip = countText.length == 0;
-                  var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : " count-ok" ) + "' title='" + countText + "'>" + count + "</span>";
-                  $contact = $('.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
-                  if ( $contact.length == 1 ) {
-                    $contact.attr('data-idchem', idchem);
-                    $contact.html("<span class='job-count-lbl'>" + jcLabel + "</span>" + decompteHtml);
-                  } else {
-                    $contact = $('.node-contact[data-idchem=' + idchem + ']');
-                    if ( $contact.length == 1 ) {
-                      $contact.append(",&nbsp;" + decompteHtml);
-                    }
-                  }
+                  var upPre = updateNode(cts, prevCountPre, countPre, true, true);
+                  prevCountPre = upPre.prevCnt;
+                  countPre = upPre.cnt;
+                  var upPost = updateNode(cts, prevCountPost, countPost, false, true);
+                  prevCountPre = upPost.prevCnt;
+                  countPre = upPost.cnt;
                 });
               }
             });
@@ -220,4 +206,45 @@ function showAjaxSpinner(show)
         }
       }
     });
+  }
+  
+  function updateNode(countInfo, prevCount, count, pre, compareCounts)
+  {
+    if ( count >= 0 ) {
+      prevCount = count;
+    }
+    
+    var idchem = countInfo.idchem;
+    count = countInfo[pre ? 'count_pre' : 'count_post'];
+    var countText = "";
+    var countMismatch = false;
+    
+    if ( undef(compareCounts) ) {
+      compareCounts = false;
+    }
+    if ( compareCounts ) {
+      countMismatch = prevCount > 0 && count !== prevCount;
+      if ( countMismatch ) {
+        countText = "-" + (prevCount - count) + " " + getTranslation('codes_missing') + " {" + countInfo.lbl.join(' & ') + "}";
+      } else
+      if ( countInfo.lbl.length > 0 ) {
+        countText = getTranslation('codes_match') + " {" + countInfo.lbl.join(' & ') + "}";
+      }
+    }
+    
+    var noTooltip = countText.length == 0;
+    var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : " count-ok" ) + "' title='" + countText + "'>" + count + "</span>";
+    $elem = $(pre ? '.node-desc' : '.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
+    if ( $elem.length == 1 ) {
+      $elem.attr('data-idchem', idchem);
+      var html = "<span class='job-count-lbl'>" + jcLabel + " (" + (pre ? preLabel : postLabel) + ") </span>" + decompteHtml;
+      $elem.html(html);
+    } else {
+      $elem = $('.node-contact[data-idchem=' + idchem + ']');
+      if ( $elem.length == 1 ) {
+        $elem.append(",&nbsp;" + decompteHtml);
+      }
+    }
+                  
+    return { prevCnt: prevCount, cnt: count };
   }
