@@ -77,3 +77,6 @@ msgstr "Nombre total d'emplois codés pour cet élément"
 
 msgid "legend_count_mismatch"
 msgstr "Nombre total d'emplois codés pour cet élément<br>(où le total ne concorde pas avec celui de l'élément enfant)"
+
+msgid "use_preauto"
+msgstr "Utiliser les données pre-auto"

@@ -333,9 +333,6 @@ class AjaxController extends AppController {
     if ( $canjemOrig && !$relatedNode ) {
       $nodeInfo['text']['contact'] = $data->idchem;
     }
-    //if ( isset($data->job_count) ) {
-    //  $nodeInfo['text']['desc'] = __("agent_jobs", [$data->job_count]);
-    //}
     $node->nodeInfo = $nodeInfo;
     
     $members = ["SubFamily", "Family", "Group", "Category"];
@@ -426,6 +423,7 @@ class AjaxController extends AppController {
     
     $curr = [];
     $chain = $_GET['chain'];
+    $usePreauto = $_GET['pre_auto'] == "1";
     
     $allCounts = [];
     $labelFlds = [];
@@ -440,7 +438,8 @@ class AjaxController extends AppController {
       $curr[] = $ch;
       
       $tbl = $first ? $defTblName : "AJ$ch";
-      $tableInfo = ['table' => "(select * from agent_jobs where caid = $ch)"];
+      $agJobsTbl = $usePreauto ? 'agent_jobs_pre_auto' : 'agent_jobs';
+      $tableInfo = ['table' => "(select * from $agJobsTbl where caid = $ch)"];
       $tableInfo['conditions'] = $first ? "1" : "$defTblName.sjnid = $tbl.sjnid";
       $first = false;
       $joinInfo = [$tbl => $tableInfo];

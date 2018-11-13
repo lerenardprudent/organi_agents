@@ -160,10 +160,11 @@ function showAjaxSpinner(show)
     e.preventDefault();
     $sel = $('[name="choice_agents[]"]');
     var agents = $sel.data('selected').toString().split(',');
+    var data = $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
     $.ajax({
       method: 'GET',
       url: $sel.data('urlBuildTreeConfig'),
-      data: $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&'),
+      data: data,
       success: function(data) {
         var res = JSON.parse(data);
         if ( res.ok ) {
@@ -181,7 +182,7 @@ function showAjaxSpinner(show)
           for ( var idc in res.chains ) {
             $.ajax({
               url: $sel.data('urlGetJobCounts'),
-              data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
+              data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&")  + '&pre_auto=' + ($('#pre-auto').prop('checked') ? 1 : 0),
               dataType: 'json',
               success: function(countsJson) {
                 prevCount = -1;
