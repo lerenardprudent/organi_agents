@@ -182,7 +182,7 @@ function showAjaxSpinner(show)
           for ( var idc in res.chains ) {
             $.ajax({
               url: $sel.data('urlGetJobCounts'),
-              data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&")  + '&pre_auto=' + ($('#pre-auto').prop('checked') ? 1 : 0),
+              data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
               dataType: 'json',
               success: function(countsJson) {
                 prevCount = -1;
@@ -192,7 +192,7 @@ function showAjaxSpinner(show)
                   if ( count >= 0 ) {
                     prevCount = count;
                   }
-                  count = cts.count;
+                  count = cts.count_pre;
                   var countText = "";
                   var countMismatch = prevCount > 0 && count != prevCount;
                   if ( countMismatch ) {

@@ -423,43 +423,50 @@ class AjaxController extends AppController {
     
     $curr = [];
     $chain = $_GET['chain'];
-    $usePreauto = $_GET['pre_auto'] == "1";
-    
+        
     $allCounts = [];
-    $labelFlds = [];
     
     $tbl = 'dummy';
     $mod = $this->loadModel($tbl);
-    $jobs = $mod->find();
+    $jobsPre = $mod->find();
+    $jobsPost = $mod->find();
     $first = true;
-    $defTblName = 'AgentJobs';
+    $resPre = $resPost = [];
         
     foreach ( $chain as $ch ) {
       $curr[] = $ch;
-      
-      $tbl = $first ? $defTblName : "AJ$ch";
-      $agJobsTbl = $usePreauto ? 'agent_jobs_pre_auto' : 'agent_jobs';
-      $tableInfo = ['table' => "(select * from $agJobsTbl where caid = $ch)"];
-      $tableInfo['conditions'] = $first ? "1" : "$defTblName.sjnid = $tbl.sjnid";
+      $jobsPre = $this->joinWith($jobsPre, 'agent_jobs_pre_auto', $ch, $resPre, $first);
+      $jobsPost = $this->joinWith($jobsPost, 'agent_jobs', $ch, $resPost, $first);
       $first = false;
-      $joinInfo = [$tbl => $tableInfo];
-      $jobs = $jobs->join($joinInfo);
-      $res = $jobs->select(['label' => "$tbl.lbl_".$this->lang, 'cnt' => 'COUNT(*)'])
-                    ->group("$defTblName.caid")
-                    ->toArray();
         
-      if ( !empty($res) ) {
-        $res = $res[0];      
-        $labels[$ch] = $res->label;
+      if ( !empty($resPre) && !empty($resPost) ) {
+        $resPre = $resPre[0];      
+        $resPost = $resPost[0];      
+        $labels[$ch] = $resPre->label;
         $crr = $curr;
         array_pop($crr);
         $allCounts[] =['idchem' => $ch,
-                       'count' => intval($res->cnt),
+                       'count_pre' => intval($resPre->cnt),
+                       'count_post' => intval($resPost->cnt),
                        'lbl' => array_map(function($c) use ($labels) { return $labels[$c]; }, $crr)];
       }
     }
     $ret->counts = $allCounts;
     $respBody = json_encode($ret);
     $this->response->body($respBody);
+  }
+  
+  public function joinWith($jobs, $table, $ch, &$res, $first = false)
+  {
+    $tableCamel = Inflector::camelize($table);
+    $tbl = $first ? $tableCamel : "$tableCamel$ch";
+    $tableInfo = ['table' => "(select * from $table where caid = $ch)"];
+    $tableInfo['conditions'] = $first ? "1" : "$tableCamel.sjnid = $tbl.sjnid";
+    $joinInfo = [$tbl => $tableInfo];
+    $jobs = $jobs->join($joinInfo);
+    $res = $jobs->select(['label' => "$tbl.lbl_".$this->lang, 'cnt' => 'COUNT(*)'])
+                ->group("$tableCamel.caid")
+                ->toArray();
+    return $jobs;
   }
 }
