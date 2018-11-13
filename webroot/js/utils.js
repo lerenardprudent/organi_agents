@@ -197,8 +197,8 @@ function showAjaxSpinner(show)
                   prevCountPre = upPre.prevCnt;
                   countPre = upPre.cnt;
                   var upPost = updateNode(cts, prevCountPost, countPost, false, true);
-                  prevCountPre = upPost.prevCnt;
-                  countPre = upPost.cnt;
+                  prevCountPost = upPost.prevCnt;
+                  countPost = upPost.cnt;
                 });
               }
             });
