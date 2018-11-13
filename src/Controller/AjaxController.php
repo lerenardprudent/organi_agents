@@ -331,7 +331,7 @@ class AjaxController extends AppController {
     $node->varname = $pfx.$data->idchem;
     $nodeInfo = ['text' => ['name' => $type." -- ".$data->idchem, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
     if ( $canjemOrig && !$relatedNode ) {
-      $nodeInfo['text']['contact'] = $data->idchem;
+      $nodeInfo['text']['contact'] = $nodeInfo['text']['desc'] = $data->idchem;
     }
     $node->nodeInfo = $nodeInfo;
     
@@ -429,10 +429,10 @@ class AjaxController extends AppController {
     $labelFlds = [];
     
     $tbl = 'dummy';
-        $mod = $this->loadModel($tbl);
-        $jobs = $mod->find();
-        $first = true;
-        $defTblName = 'AgentJobs';
+    $mod = $this->loadModel($tbl);
+    $jobs = $mod->find();
+    $first = true;
+    $defTblName = 'AgentJobs';
         
     foreach ( $chain as $ch ) {
       $curr[] = $ch;
