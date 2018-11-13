@@ -254,17 +254,22 @@ class AjaxController extends AppController {
     $ret->chains = $canjemChains;
     
     $refererUrl = $_SERVER['HTTP_REFERER'];
-    if ( strpos($refererUrl, $this->agents_param."=") === false ) {
-      $parsedUrl = parse_url($refererUrl);
+    $parsedUrl = parse_url($refererUrl);
+        
+    $pfx = $this->agents_param."=";
+    $repl = $pfx.urlencode(implode(',', $agentIds));
+    if ( strpos($refererUrl, $pfx) === false ) {
       if ( !isset($parsedUrl['query']) ) {
-        $parsedUrl['query'] = '';
+      $parsedUrl['query'] = '';
       } else {
         $parsedUrl['query'] .= '&';
       }
-      $parsedUrl['query'] .= $this->agents_param."=".urlencode(implode(',', $agentIds));
-      $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
+      $parsedUrl['query'] .= $repl;
+    } else {
+      $regex = '/'.$pfx.'[^&]+/';
+      $parsedUrl['query'] = preg_replace($regex, $repl, $parsedUrl['query']);
     }
-    
+    $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
     
     $respBody = json_encode($ret);
     $this->response->body($respBody);
@@ -324,7 +329,7 @@ class AjaxController extends AppController {
       $htmlClasses[] = 'related-agent';
     }
     $node->varname = $pfx.$data->idchem;
-    $nodeInfo = ['text' => ['name' => $type, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
+    $nodeInfo = ['text' => ['name' => $type." -- ".$data->idchem, 'title' => $data->$labelFld], 'HTMLclass' => implode(' ', $htmlClasses) ];
     if ( $canjemOrig && !$relatedNode ) {
       $nodeInfo['text']['contact'] = $data->idchem;
     }
@@ -396,7 +401,7 @@ class AjaxController extends AppController {
     }
     
     $sortLog = ($node1->varname ? $node1->varname : "root")." vs ".($node2->varname ? $node2->varname : "root")." : ".$ret.PHP_EOL;
-    error_log($sortLog, 3, "C:/Users/p0070611/Documents/NetBeansProjects/OrganigrammeAgentsChimiques/logs/error.log");
+    //error_log($sortLog, 3, "C:/Users/p0070611/Documents/NetBeansProjects/OrganigrammeAgentsChimiques/logs/error.log");
     return $ret;
   } 
   
