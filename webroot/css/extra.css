@@ -548,3 +548,30 @@ div.pad-5 {
 div.input input[type="checkbox"] {
   vertical-align: text-top;
 }
+
+div.footer {
+  position: fixed;
+  display: block;
+  width: 100%;
+  padding: 5px;
+  background-image: linear-gradient(lightpink, white);
+  left: 50%;
+  margin-left: -500px;
+  bottom: 0;
+  height: 30px;
+}
+
+div.pad {
+  display: block;
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  margin-left: -500px;
+  width: 1200px;
+  background-color: white;
+  height: 2px;
+}
+
+div.footer > span.footer-text {
+  float: right;
+}

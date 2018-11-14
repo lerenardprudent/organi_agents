@@ -125,5 +125,12 @@ foreach ( $preTranslate as $pre ) {
     <span class="loading-info"></span>
     <span class='loading-text'><?= __("Processing")."..." ?></span>
   </div>
+  
+  <div class="row pad"></div>
+  <div class="row footer">
+    <div class="columns large-12 text-center">
+      <?= $this->Html->tag('span', __("createdby")." ".$this->Html->link("LHIMP", "http://lhimp.ca", ['target' => '_blank', 'class' => 'lhimp-link']), ['class' => 'footer-text']) ?>
+    </div>
+  </div>
 </body>
 </html>

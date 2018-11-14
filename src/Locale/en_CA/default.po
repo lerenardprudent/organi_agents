@@ -66,3 +66,6 @@ msgstr "Pre"
 
 msgid "post_label"
 msgstr "Post"
+
+msgid "createdby"
+msgstr "Created by"
