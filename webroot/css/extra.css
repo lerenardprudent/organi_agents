@@ -525,7 +525,7 @@ span.job-count.count-ok {
 span.job-count {
   margin-left: 3px;
   font-weight: bold;
-  font-size: 15px;
+  font-size: 12px;
 }
 
 span.job-count:not(.empty-chain) {

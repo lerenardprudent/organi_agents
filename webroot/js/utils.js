@@ -234,13 +234,14 @@ function showAjaxSpinner(show)
     
     var noTooltip = countText.length == 0;
     var decompteHtml = "<span class='job-count" + ( noTooltip ? " empty-chain" : "" ) + (countMismatch ? " count-mismatch" : " count-ok" ) + "' title='" + countText + "'>" + count + "</span>";
-    $elem = $(pre ? '.node-desc' : '.node-contact').filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
+    var nodeType = pre ? '.node-desc' : '.node-contact';
+    $elem = $(nodeType).filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
     if ( $elem.length == 1 ) {
       $elem.attr('data-idchem', idchem);
       var html = "<span class='job-count-lbl'>" + jcLabel + " (" + (pre ? preLabel : postLabel) + ") </span>" + decompteHtml;
       $elem.html(html);
     } else {
-      $elem = $('.node-contact[data-idchem=' + idchem + ']');
+      $elem = $(nodeType + '[data-idchem=' + idchem + ']');
       if ( $elem.length == 1 ) {
         $elem.append(",&nbsp;" + decompteHtml);
       }
