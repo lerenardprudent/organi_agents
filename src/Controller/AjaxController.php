@@ -45,8 +45,24 @@ class AjaxController extends AppController {
     $ret->ok = true;
     $agentIds = $_GET[$this->agents_param];
     $labelFld = "label".Inflector::camelize($this->lang);
-    $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
     $selectFlds = [];
+    $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
+    $cols = ['SubFamily', "Family", 'Group', 'Category'];
+    $lookup = $this->loadModel('HierarchieAgents')
+                ->find()
+                ->where(['idchem IN ' => $agentIds, 'dupl_agent' => false])
+                ->toArray()[0];
+    $startLvl = $lookup->lvl;
+    
+    $modelsAbove = array_slice($modelsToContain, $startLvl);
+    
+    foreach ( $cols as $lv_i => $lv_n ) {
+      if ( $lookup->$lv_n && $startLvl < $lv_i+1 ) {
+        $relAgentCond = "Agents.$lv_n = RelAgents.$lv_n";
+        break;
+      }
+    }
+    
     foreach (array_merge(['Agents', 'RelAgents'], $modelsToContain) as $mod) {
       foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
         $selectFlds[] = "$mod.$memb";
