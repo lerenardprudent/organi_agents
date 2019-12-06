@@ -46,47 +46,39 @@ class AjaxController extends AppController {
     $agentIds = $_GET[$this->agents_param];
     $labelFld = "label".Inflector::camelize($this->lang);
     $selectFlds = [];
-    $modelsToContain = ['SubFamilies', 'Families', 'Groups', 'Categories'];
+    $models = ['Agents', 'SubFamilies', 'Families', 'Groups', 'Categories'];
+    $relModel = "Related";
     $cols = ['SubFamily', "Family", 'Group', 'Category'];
     $lookup = $this->loadModel('HierarchieAgents')
                 ->find()
                 ->where(['idchem IN ' => $agentIds, 'dupl_agent' => false])
                 ->toArray()[0];
     $startLvl = $lookup->lvl;
-    
-    $modelsAbove = array_slice($modelsToContain, $startLvl);
+    $startModel = $models[$startLvl];
+    $modelsAbove = array_slice($models, $startLvl+1);
     
     foreach ( $cols as $lv_i => $lv_n ) {
       if ( $lookup->$lv_n && $startLvl < $lv_i+1 ) {
-        $relAgentCond = "Agents.$lv_n = RelAgents.$lv_n";
+        $relModelCond = "$startModel.$lv_n = $relModel.$lv_n";
         break;
       }
     }
     
-    foreach (array_merge(['Agents', 'RelAgents'], $modelsToContain) as $mod) {
-      foreach (['idchem', $labelFld, 'level', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
+    foreach (array_merge([$startModel, $relModel], $modelsAbove) as $mod) {
+      foreach (['idchem', $labelFld, 'level', 'lvl', 'canjem_agent', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
         $selectFlds[] = "$mod.$memb";
       }
     }
     
-    $items = $this->loadModel('Agents')
+    $items = $this->loadModel($startModel)
                   ->find()
-                  ->join(['RelAgents' => ['table' => 'agnts',
+                  ->join([$relModel => ['table' => Inflector::tableize($startModel),
                                           'type' => 'LEFT',
-                                          'conditions' => "(CASE WHEN Agents.SubFamily IS NOT null THEN Agents.SubFamily ".
-                                                          "      WHEN Agents.Family IS NOT null THEN Agents.Family ".
-                                                          "      WHEN Agents.`Group` IS NOT null THEN Agents.`Group` ".
-                                                          "      ELSE Agents.Category END) = ".
-                                                          "(CASE WHEN Agents.SubFamily IS NOT null THEN RelAgents.SubFamily ".
-                                                          "      WHEN Agents.Family IS NOT null THEN RelAgents.Family ".
-                                                          "      WHEN Agents.`Group` IS NOT null THEN RelAgents.`Group` ".
-                                                          "      ELSE RelAgents.Category END)"
-                                         ]
-                         ])
+                                          'conditions' => $relModelCond ] ])
                   ->select($selectFlds, false)
-                  ->contain($modelsToContain)
-                  ->where(['Agents.idchem IN' => $agentIds,
-                           'RelAgents.idchem <> Agents.idchem'])
+                  ->contain($modelsAbove)
+                  ->where(["$startModel.idchem IN" => $agentIds,
+                           "$relModel.idchem <> $startModel.idchem"])
                   ->toArray();
     
     $rootNodeName = 'root';
@@ -99,42 +91,44 @@ class AjaxController extends AppController {
     
     foreach ( $items as $item ) {
       $parentNodeId = null;
-      $chemNode = $this->initNode($item, $labelFld, true);
-      if ( isset($item->SubFamily) ) {
+      
+      $baseNode = $this->initNode($item, $labelFld, true);
+      if ( $item->lvl == 0 ) {
+        $canjemChains[$item->idchem] = [$item->idchem];
+      }
+      
+      if ( $item->SubFamily && $item->lvl < 1 ) {
         $parentNodeId = "subFamily".$item->SubFamily;
         $childDropLevel = 0;
       } else
-      if ( isset($item->Family) ) {
+      if ( $item->Family && $item->lvl < 2 ) {
         $parentNodeId = "family".$item->Family;
         $childDropLevel = 1;
       } else
-      if ( isset($item->Group) ) {
+      if ( $item->Group && $item->lvl < 3 ) {
         $parentNodeId = "group".$item->Group;
         $childDropLevel = 2;
       } else {
         $parentNodeId = "category".$item->Category;
         $childDropLevel = 3;
       }
-      $chemNode->nodeInfo['parent'] = $parentNodeId;
-      $nodes[$chemNode->varname] = $chemNode;
+      $baseNode->nodeInfo['parent'] = $parentNodeId;
+      $nodes[$baseNode->varname] = $baseNode;
       $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       
-      $currChain = [$item->idchem];
-      
       $parentNodeId = null;
-      if ( isset($item->RelAgents) && !isset($nodes['agent'.$item->RelAgents['idchem']]) ) {
-
-        $relItem = $item->RelAgents;
+      if ( $item->$relModel && !isset($nodes['agent'.$item->$relModel['idchem']]) ) {
+        $relItem = $item->$relModel;
         $relNode = $this->initNode($relItem, $labelFld);
-        if ( isset($relItem->SubFamily) ) {
+        if ( $relItem->SubFamily && $relItem->lvl < 1 ) {
           $parentNodeId = "subFamily".$relItem->SubFamily;
           $childDropLevel = 0;
         } else
-        if ( isset($relItem->Family) ) {
+        if ( $relItem->Family && $relItem->lvl < 2 ) {
           $parentNodeId = "family".$relItem->Family;
           $childDropLevel = 1;
         } else
-        if ( isset($relItem->Group) ) {
+        if ( $relItem->Group && $relItem->lvl < 3  ) {
           $parentNodeId = "group".$relItem->Group;
           $childDropLevel = 2;
         } else {
@@ -147,33 +141,29 @@ class AjaxController extends AppController {
       } 
        
       $parentNodeId = null;
-      if ( isset($item->SubFamily) ) {
-        if ( strpos($item->sub_family->level, "idchem") !== false ) { $currChain[] = $item->SubFamily; }
-        
+      if ( $item->SubFamily && $item->lvl < 1  ) {
         if ( !isset($nodes['subFamily'.$item->SubFamily]) ) {
-        $subFamilyItem = $item->sub_family;
-        $subFamNode = $this->initNode($subFamilyItem, $labelFld);
-        if ( isset($subFamilyItem->Family) ) {
-          $parentNodeId = "family".$subFamilyItem->Family;
-          $childDropLevel = 0;
-        } else
-        if ( isset($subFamilyItem->Group) ) {
-          $parentNodeId = "group".$subFamilyItem->Group;
-          $childDropLevel = 1;
-        } else {
-          $parentNodeId = "category".$subFamilyItem->Category;
-          $childDropLevel = 2;
+          $subFamilyItem = $item->sub_family;
+          $subFamNode = $this->initNode($subFamilyItem, $labelFld);
+          if ( isset($subFamilyItem->Family) ) {
+            $parentNodeId = "family".$subFamilyItem->Family;
+            $childDropLevel = 0;
+          } else
+          if ( isset($subFamilyItem->Group) ) {
+            $parentNodeId = "group".$subFamilyItem->Group;
+            $childDropLevel = 1;
+          } else {
+            $parentNodeId = "category".$subFamilyItem->Category;
+            $childDropLevel = 2;
+          }
+          $subFamNode->nodeInfo['parent'] = $parentNodeId;
+          $nodes[$subFamNode->varname] = $subFamNode;
+          $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
         }
-        $subFamNode->nodeInfo['parent'] = $parentNodeId;
-        $nodes[$subFamNode->varname] = $subFamNode;
-        $this->updateDropLevels($childrenDropLevels, $parentNodeId, $childDropLevel);
       }
-    }
       
       $parentNodeId = null;
-      if ( isset($item->Family) ) {
-        if ( strpos($item->family->level, "idchem") !== false ) { $currChain[] = $item->Family; }
-        
+      if ( $item->Family && $item->lvl < 2 ) {
         if ( !isset($nodes['family'.$item->Family]) ) {
           $familyItem = $item->family;
           $famNode = $this->initNode($familyItem, $labelFld);
@@ -192,32 +182,24 @@ class AjaxController extends AppController {
       }
       
       $parentNodeId = null;
-      if ( isset($item->Group) ) {
-        if ( strpos($item->group->level, "idchem") !== false ) { $currChain[] = $item->Group; }
-        
+      if ( $item->Group && $item->lvl < 3  ) {
         if ( !isset($nodes['group'.$item->Group]) ) {
           $groupItem = $item->group;
           $groupNode = $this->initNode($groupItem, $labelFld);
-          $parentNodeId = "category".$familyItem->Category;
+          $parentNodeId = "category".$groupItem->Category;
           $groupNode->nodeInfo['parent'] = $parentNodeId;
           $nodes[$groupNode->varname] = $groupNode;
         }
       }
       
       $parentNodeId = null;
-      if ( isset($item->Category) ) {
-        if ( strpos($item->category->level, "idchem") !== false ) { $currChain[] = $item->Category; }
-        
+      if ( $item->category ) {
         if ( !isset($nodes['category'.$item->Category]) ) {
           $categoryItem = $item->category;
           $cateNode = $this->initNode($categoryItem, $labelFld);
           $cateNode->nodeInfo['parent'] = $rootNodeName;
           $nodes[$cateNode->varname] = $cateNode;
         }
-      }
-      
-      if ( !isset($canjemChains[$item->idchem] ) ) {
-        $canjemChains[$item->idchem] = $currChain;
       }
     }
     

@@ -21,9 +21,6 @@ class CategoriesTable extends Table
     {
       parent::initialize($config);
 
-      //$this->setTable('hierarchie_agents');
-      $this->setTable('categs');
-      
       $this->addAssociations([
         'hasMany'   => [ 'Jobs' =>        [ 'className' => 'agent_jobs',
                                             'foreignKey' => 'chemical_agent_id',

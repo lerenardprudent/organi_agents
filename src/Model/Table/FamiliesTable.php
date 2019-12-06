@@ -21,14 +21,11 @@ class FamiliesTable extends Table
     {
       parent::initialize($config);
 
-      //$this->setTable('hierarchie_agents');
-      $this->setTable('fams');
-      
       $this->addAssociations([
-        'belongsTo' => [ 'Groups' =>      [ 'className' => 'grps',
+        'belongsTo' => [ 'Groups' =>      [ 'className' => 'groups',
                                             'foreignKey' => 'Group',
                                             'bindingKey' => 'idchem' ],
-                         'Categories' =>  [ 'className' => 'categs',
+                         'Categories' =>  [ 'className' => 'categories',
                                             'foreignKey' => 'Category',
                                             'bindingKey' => 'idchem' ] ],
         'hasMany'   => [ 'Jobs' =>        [ 'className' => 'agent_jobs',

@@ -20,9 +20,6 @@ class GroupsTable extends Table
     public function initialize(array $config)
     {
       parent::initialize($config);
-
-      //$this->setTable('hierarchie_agents');
-      $this->setTable('grps');
       
       $this->addAssociations([
         'belongsTo' => [ 'Categories' =>  [ 'className' => 'categs',
