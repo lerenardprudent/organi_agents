@@ -200,6 +200,12 @@ function showAjaxSpinner(show)
                   prevCountPost = upPost.prevCnt;
                   countPost = upPost.cnt;
                 });
+              },
+              complete: function() {
+                /* Break up lines that have text in brackets */
+                $('.node-title').each(function() {
+                  $(this).html( $(this).text().replace(/ \(/, " <br>("))
+                })
               }
             });
           }

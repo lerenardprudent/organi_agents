@@ -113,10 +113,7 @@ foreach ( $preTranslate as $pre ) {
         <div class='empty-square'><span class='job-count count-ok'>99</span></div>
         <div class="legend-desc"><?= __("legend_count_ok") ?></div>
       </div>
-      <div class='legend-row'>
-        <div class='empty-square'><span class='job-count count-mismatch'>99</span></div>
-        <div class="legend-desc"><?= __("legend_count_mismatch") ?></div>
-      </div>
+      
     </fieldset>
   </div>
     

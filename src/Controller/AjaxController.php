@@ -45,41 +45,49 @@ class AjaxController extends AppController {
     $ret->ok = true;
     $agentIds = $_GET[$this->agents_param];
     $labelFld = "label".Inflector::camelize($this->lang);
-    $selectFlds = [];
     $models = ['Agents', 'SubFamilies', 'Families', 'Groups', 'Categories'];
     $relModel = "Related";
     $cols = ['SubFamily', "Family", 'Group', 'Category'];
-    $lookup = $this->loadModel('HierarchieAgents')
-                ->find()
-                ->where(['idchem IN ' => $agentIds, 'dupl_agent' => false])
-                ->toArray()[0];
-    $startLvl = $lookup->lvl;
-    $startModel = $models[$startLvl];
-    $modelsAbove = array_slice($models, $startLvl+1);
+    $items = [];
     
-    foreach ( $cols as $lv_i => $lv_n ) {
-      if ( $lookup->$lv_n && $startLvl < $lv_i+1 ) {
-        $relModelCond = "$startModel.$lv_n = $relModel.$lv_n";
-        break;
-      }
-    }
-    
-    foreach (array_merge([$startModel, $relModel], $modelsAbove) as $mod) {
-      foreach (['idchem', $labelFld, 'level', 'lvl', 'canjem_agent', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
-        $selectFlds[] = "$mod.$memb";
-      }
-    }
-    
-    $items = $this->loadModel($startModel)
+    foreach ( $agentIds as $agentId ) {
+      $selectFlds = [];
+
+      $lookup = $this->loadModel('HierarchieAgents')
                   ->find()
-                  ->join([$relModel => ['table' => Inflector::tableize($startModel),
-                                          'type' => 'LEFT',
-                                          'conditions' => $relModelCond ] ])
-                  ->select($selectFlds, false)
-                  ->contain($modelsAbove)
-                  ->where(["$startModel.idchem IN" => $agentIds,
-                           "$relModel.idchem <> $startModel.idchem"])
-                  ->toArray();
+                  ->where(['idchem IN ' => $agentId, 'dupl_agent' => false])
+                  ->toArray()[0];
+      $startLvl = $lookup->lvl;
+      $startModel = $models[$startLvl];
+      $modelsAbove = array_slice($models, $startLvl+1);
+
+      foreach ( $cols as $lv_i => $lv_n ) {
+        if ( $lookup->$lv_n && $startLvl < $lv_i+1 ) {
+          $relModelCond = "$startModel.$lv_n = $relModel.$lv_n";
+          break;
+        }
+      }
+
+      foreach (array_merge([$startModel, $relModel], $modelsAbove) as $mod) {
+        foreach (['idchem', $labelFld, 'level', 'lvl', 'canjem_agent', 'SubFamily', 'Family', 'Group', 'Category'] as $memb) {
+          $selectFlds[] = "$mod.$memb";
+        }
+      }
+
+      $items = array_merge(
+                  $items,
+                  $this->loadModel($startModel)
+                        ->find()
+                        ->join([$relModel => ['table' => Inflector::tableize($startModel),
+                                                'type' => 'LEFT',
+                                                'conditions' => $relModelCond ] ])
+                        ->select($selectFlds, false)
+                        ->contain($modelsAbove)
+                        ->where(["$startModel.idchem" => $agentId,
+                                 "$relModel.idchem <> $startModel.idchem"])
+                        ->toArray()
+                );
+    }
     
     $rootNodeName = 'root';
     $childrenDropLevels = [];

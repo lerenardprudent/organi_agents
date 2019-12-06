@@ -25,7 +25,7 @@ msgid "no_agents_found"
 msgstr "Aucuns agents trouvés"
 
 msgid "draw_hierarchy"
-msgstr "Dessiner l'organigramme"
+msgstr "Afficher l'organigramme"
 
 msgid "SubFamily"
 msgstr "SousFamille"
@@ -55,10 +55,10 @@ msgid "canjem_agent"
 msgstr "Agent CANJEM"
 
 msgid "selected_agent"
-msgstr "Agent sélectionné"
+msgstr "Élément sélectionné"
 
 msgid "related_agent"
-msgstr "Agent connexe"
+msgstr "Élément connexe"
 
 msgid "jobs_coded"
 msgstr "Emplois codés"

@@ -474,8 +474,8 @@ ul.chosen-results li {
 
 #tree-legend {
   display: none;
-  width: 33%;
-  margin: 0 auto;
+  width: 36%;
+  margin: 35px auto;
   text-align: center;
 }
 
@@ -574,4 +574,9 @@ div.pad {
 
 div.footer > span.footer-text {
   float: right;
+}
+
+p.node-title {
+  line-height: 1.5;
+  margin-bottom: 5px;
 }

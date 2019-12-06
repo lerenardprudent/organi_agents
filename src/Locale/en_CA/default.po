@@ -29,16 +29,16 @@ msgid "agent_jobs"
 msgstr "{0} jobs coded"
 
 msgid "draw_hierarchy"
-msgstr "Draw hierarchy"
+msgstr "Display hierarchy"
 
 msgid "canjem_agent"
 msgstr "CANJEM agent"
 
 msgid "selected_agent"
-msgstr "Selected agent"
+msgstr "Selected item"
 
 msgid "related_agent"
-msgstr "Related agent"
+msgstr "Related item"
 
 msgid "jobs_coded"
 msgstr "Jobs coded"
