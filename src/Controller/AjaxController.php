@@ -76,6 +76,9 @@ class AjaxController extends AppController {
       }
 
       $mod = $this->loadModel($startModel);
+      foreach ( $modelsAbove as $m ) {
+        $this->loadModel($m);
+      }
       Log::write('error', "FOCK");
       Log::write('error',print_r($mod, true));
       if ( $startModel == "Families" ) {
