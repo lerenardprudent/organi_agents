@@ -76,6 +76,8 @@ class AjaxController extends AppController {
       }
 
       $mod = $this->loadModel($startModel);
+      Log::write('error', "FOCK");
+      Log::write('error',print_r($mod, true));
       if ( $startModel == "Families" ) {
         $assoc = $mod->getAssociation($modelsAbove[0]);
         Log::write('error', "HERE IT IS:");
