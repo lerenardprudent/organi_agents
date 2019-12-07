@@ -10,6 +10,7 @@ namespace App\Controller;
 
 use Cake\Utility\Inflector;
 use Cake\Event\Event;
+use Cake\Log\Log;
 
 class AjaxController extends AppController {
   
@@ -74,9 +75,12 @@ class AjaxController extends AppController {
         }
       }
 
-      $items = array_merge(
-                  $items,
-                  $this->loadModel($startModel)
+      $mod = $this->loadModel($startModel);
+      if ( $startModel == "Families" ) {
+        $assoc = $mod->getAssociation($modelsAbove[0]);
+        Log::write('error', "HERE IT IS:" . PHP_EOL . print_r($assoc, true));
+      }
+      $its = $mod
                         ->find()
                         ->join([$relModel => ['table' => Inflector::tableize($startModel),
                                                 'type' => 'LEFT',
@@ -85,8 +89,9 @@ class AjaxController extends AppController {
                         ->contain($modelsAbove)
                         ->where(["$startModel.idchem" => $agentId,
                                  "$relModel.idchem <> $startModel.idchem"])
-                        ->toArray()
-                );
+                        ->toArray();
+      
+      $items = array_merge( $items, $its );
     }
     
     $rootNodeName = 'root';
