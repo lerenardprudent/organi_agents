@@ -37,7 +37,7 @@ class AjaxController extends AppController {
     $ret->msgid = $msgId;
     $ret->text = __($msgId);
     $respBody = json_encode($ret, JSON_FORCE_OBJECT);
-    $this->response->body($respBody);
+    $this->response->withStringBody($respBody);
   }
   
   public function buildTreeConfig()
@@ -470,7 +470,7 @@ class AjaxController extends AppController {
     }
     $ret->counts = $allCounts;
     $respBody = json_encode($ret);
-    $this->response->body($respBody);
+    return $this->response->withStringBody($respBody);
   }
   
   public function joinWith($jobs, $table, $ch, &$res, $first = false)
