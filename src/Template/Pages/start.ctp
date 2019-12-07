@@ -23,7 +23,7 @@ if (!Configure::read('debug')) :
     );
 endif;
 
-$currLang = $this->request->session()->read('Config.language');;
+$currLang = $this->request->getSession()->read('Config.language');;
 $description = __("title");
 
 $this->Form->templates([
