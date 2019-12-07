@@ -43,7 +43,7 @@ class AppController extends Controller
       ]);
       $this->loadComponent('Flash');
 
-      $session = $this->request->session();
+      $session = $this->request->getSession();
       $session->write('Config.DEFAULT_LANG', self::LANG_FR);
       $this->lang = isset($_GET['lang']) ? $_GET['lang'] : ( $session->read('Config.language') ? $session->read('Config.language') : $session->read('Config.DEFAULT_LANG') );
       $this->setLang($this->lang);
@@ -57,7 +57,7 @@ class AppController extends Controller
     
   public function setLang($lang = null)
   {
-    $session = $this->request->session();
+    $session = $this->request->getSession();
     if ( $lang == null ) {
       $lang = $session->read('Config.language');
     }

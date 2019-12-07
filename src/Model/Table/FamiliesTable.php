@@ -9,6 +9,7 @@
 namespace App\Model\Table;
 
 use Cake\ORM\Table;
+use Cake\Log\Log;
 
 /**
  * Description of PatientsTable
@@ -20,6 +21,7 @@ class FamiliesTable extends Table
     public function initialize(array $config)
     {
       parent::initialize($config);
+      Log::write('error', "ASSOCIATIONS ADDED BORDEL");
 
       $this->addAssociations([
         'belongsTo' => [ 'Groups' =>      [ 'className' => 'groups',
