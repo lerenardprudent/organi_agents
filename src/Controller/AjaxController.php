@@ -37,7 +37,7 @@ class AjaxController extends AppController {
     $ret->msgid = $msgId;
     $ret->text = __($msgId);
     $respBody = json_encode($ret, JSON_FORCE_OBJECT);
-    return $this->response->withStringBody($respBody);
+    $this->response->body($respBody);
   }
   
   public function buildTreeConfig()
@@ -79,7 +79,7 @@ class AjaxController extends AppController {
       if ( $startModel == "Families" ) {
         $assoc = $mod->getAssociation($modelsAbove[0]);
         Log::write('error', "HERE IT IS:");
-        Log::write('error', print_r($assoc, true));
+        Log::write('error',print_r($assoc, true));
       }
       $its = $mod
                         ->find()
@@ -284,7 +284,7 @@ class AjaxController extends AppController {
     $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
     
     $respBody = json_encode($ret);
-    return $this->response->withStringBody($respBody);
+    $this->response->body($respBody);
   }
   
   function initNode(&$data, $labelFld, $selected = false)
@@ -465,7 +465,7 @@ class AjaxController extends AppController {
     }
     $ret->counts = $allCounts;
     $respBody = json_encode($ret);
-    return $this->response->withStringBody($respBody);
+    $this->response->body($respBody);
   }
   
   public function joinWith($jobs, $table, $ch, &$res, $first = false)
