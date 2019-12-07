@@ -284,7 +284,7 @@ class AjaxController extends AppController {
     $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
     
     $respBody = json_encode($ret);
-    $this->response->body($respBody);
+    return $this->response->withStringBody($respBody);
   }
   
   function initNode(&$data, $labelFld, $selected = false)
