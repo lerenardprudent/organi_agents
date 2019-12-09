@@ -71,7 +71,7 @@ class PagesController extends AppController
         $this->set('lang', $this->lang);
         $this->set('agentsParam', $this->agents_param);
         $this->set('langParam', $this->lang_param);
-
+        
         try {
             $this->render(implode('/', $path));
         } catch (MissingTemplateException $exception) {

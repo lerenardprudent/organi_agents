@@ -54,14 +54,16 @@ foreach ( $preTranslate as $pre ) {
     <?= $this->Html->css('tree-config.css') ?>
     <?= $this->Html->css('Treant.css') ?>
     <?= $this->Html->css('chosen.css') ?>
+    <?= $this->Html->css('jquery.qtip.min') ?>
     
-    <?= $this->Html->script('jquery-3.3.1.min.js') ?>
-    <?= $this->Html->script('jquery.easing.js') ?>
-    <?= $this->Html->script('jquery.mousewheel.js') ?>
-    <?= $this->Html->script('raphael.js') ?>
-    <?= $this->Html->script('perfect-scrollbar.js') ?>
-    <?= $this->Html->script('Treant.js') ?>
-    <?= $this->Html->script('chosen.jquery.js') ?>
+    <?= $this->Html->script('jquery-3.3.1.min') ?>
+    <?= $this->Html->script('jquery.easing') ?>
+    <?= $this->Html->script('jquery.mousewheel') ?>
+    <?= $this->Html->script('raphael') ?>
+    <?= $this->Html->script('perfect-scrollbar') ?>
+    <?= $this->Html->script('Treant') ?>
+    <?= $this->Html->script('chosen.jquery') ?>
+    <?= $this->Html->script('jquery.qtip.min') ?>
     
     <?= $this->Html->script('utils.js') ?>
     <?= $this->Html->script('jq-init.js') ?>
@@ -91,8 +93,6 @@ foreach ( $preTranslate as $pre ) {
     </div>
   </div>
 
-  <div class='agents'>  
-  </div>
   <div id="tree-root"></div>
   <div id='tree-legend'>
     <fieldset>
@@ -111,7 +111,11 @@ foreach ( $preTranslate as $pre ) {
       </div>
       <div class='legend-row'>
         <div class='empty-square'><span class='job-count count-ok'>99</span></div>
-        <div class="legend-desc"><?= __("legend_count_ok") ?></div>
+        <div class="legend-desc"><?= __("legend_pre_count_ok") ?></div>
+      </div>
+      <div class='legend-row'>
+        <div class='empty-square'><span class='job-count post count-ok'>99</span></div>
+        <div class="legend-desc"><?= __("legend_post_count_ok") ?></div>
       </div>
       
     </fieldset>

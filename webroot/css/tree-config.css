@@ -53,3 +53,19 @@ body { background: #fff; }
 .node-desc {
   line-height: 1.1;
 }
+
+div.node > p, div.node > p > span {
+  font-size: .7rem;
+}
+
+button[name="draw-button"] {
+  margin: 0;
+}
+
+p.node-desc, p.node-contact {
+  display: inline-block;
+}
+
+.qtip-content * {
+  font-size: 16px;
+}

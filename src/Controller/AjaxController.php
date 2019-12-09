@@ -11,6 +11,7 @@ namespace App\Controller;
 use Cake\Utility\Inflector;
 use Cake\Event\Event;
 use Cake\Log\Log;
+use Cake\Core\Configure;
 
 class AjaxController extends AppController {
   
@@ -51,6 +52,7 @@ class AjaxController extends AppController {
     $cols = ['SubFamily', "Family", 'Group', 'Category'];
     $items = [];
     
+    $relItemCount = 0;
     foreach ( $agentIds as $agentId ) {
       $selectFlds = [];
 
@@ -96,6 +98,7 @@ class AjaxController extends AppController {
                         ->where(["$startModel.idchem" => $agentId,
                                  "$relModel.idchem <> $startModel.idchem"])
                         ->toArray();
+      $relItemCount += count($its);
       
       $items = array_merge( $items, $its );
     }
@@ -287,6 +290,8 @@ class AjaxController extends AppController {
       $parsedUrl['query'] = preg_replace($regex, $repl, $parsedUrl['query']);
     }
     $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
+    $ret->adjustNodeWidth = Configure::read('adjustNodeWidth');
+    $ret->relNodeCount = $relItemCount;
     
     $respBody = json_encode($ret);
     return $this->response->withStringBody($respBody);

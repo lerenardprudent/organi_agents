@@ -161,6 +161,7 @@ function showAjaxSpinner(show)
     $sel = $('[name="choice_agents[]"]');
     var agents = $sel.data('selected').toString().split(',');
     var data = $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
+    let adjustNodes = false
     $.ajax({
       method: 'GET',
       url: $sel.data('urlBuildTreeConfig'),
@@ -174,13 +175,38 @@ function showAjaxSpinner(show)
           }
           $elem = $(res.rootElem);
           $elem.html("");
-          var treeConfigFilePath = res.treeConfigFilename; //
+          
+          let defaultNodeWidth = 250;
+          let defaultNodeFontSize = 0.7
+          let nodeWidth = defaultNodeWidth
+          let nodeFontSize = defaultNodeFontSize
+          if ( res.adjustNodeWidth ) {
+            let screenWidth = $('body').width()
+            let nNodes = res.relNodeCount;
+            let betweenSpacing = 40
+            let edgeSpacing = 15
+            
+            let adjustedNodeWidth = (screenWidth - 2*edgeSpacing) / nNodes - betweenSpacing
+            if ( adjustedNodeWidth < defaultNodeWidth ) {
+              nodeWidth = adjustedNodeWidth
+              let proportion = nodeWidth / defaultNodeWidth
+              nodeFontSize = proportion
+              adjustNodes = true
+            }
+            console.log(`Adjusting node width to ${nodeWidth}px`)
+            console.log(`Adjusting node font size to ${nodeFontSize}rem`)
+          }
+          injectStyles(`.nodeExample1 { width: ${nodeWidth}px }`)
+          injectStyles(`div.node > p, div.node > p > span { font-size: ${nodeFontSize}rem }`)
+          
+          var treeConfigFilePath = res.treeConfigFilename; 
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
             new Treant(chart_config);
           });
           jcLabel = getTranslation('jobs_coded');
           preLabel = getTranslation('pre_label');
           postLabel = getTranslation('post_label');
+          
           
           for ( var idc in res.chains ) {
             $.ajax({
@@ -206,6 +232,21 @@ function showAjaxSpinner(show)
                 $('.node-title').each(function() {
                   $(this).html( $(this).text().replace(/ \(/, " <br>("))
                 })
+                
+                if ( adjustNodes ) {
+                $('.node').each(function() {
+                  $(this).qtip({
+                    content: {
+                      text: $(this).html()
+                    },
+                    position: {
+                      my: 'bottom right',
+                      at: 'top left'
+                    }
+                  });
+                  console.log("Tooltips added")
+                });
+          }
               }
             });
           }
@@ -244,7 +285,9 @@ function showAjaxSpinner(show)
     $elem = $(nodeType).filter(function() { return $(this).text().substr(0, idchem.length) == idchem });
     if ( $elem.length == 1 ) {
       $elem.attr('data-idchem', idchem);
-      var html = "<span class='job-count-lbl'>" + jcLabel + " (" + (pre ? preLabel : postLabel) + ") </span>" + decompteHtml;
+      let cssClasses = `job-count ${pre ? "pre" : "post"}`
+      let extra = pre ? "&nbsp;/&nbsp;" : ""
+      let html = `<span class='${cssClasses}'>${decompteHtml}</span>${extra}`
       $elem.html(html);
     } else {
       $elem = $(nodeType + '[data-idchem=' + idchem + ']');
@@ -254,4 +297,10 @@ function showAjaxSpinner(show)
     }
                   
     return { prevCnt: prevCount, cnt: count };
+  }
+  
+  function injectStyles(rule) {
+    var div = $("<div />", {
+      html: '&shy;<style>' + rule + '</style>'
+    }).appendTo("body");    
   }

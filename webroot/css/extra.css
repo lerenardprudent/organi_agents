@@ -474,8 +474,8 @@ ul.chosen-results li {
 
 #tree-legend {
   display: none;
-  width: 36%;
-  margin: 35px auto;
+  width: 55%;
+  margin: 0 auto;
   text-align: center;
 }
 
@@ -506,12 +506,8 @@ span.job-count-lbl {
   display: inline-block;
 }
 
-body[data-lang="fr"] span.job-count-lbl {
-  min-width: 130px;
-}
-
-body[data-lang="en"] span.job-count-lbl {
-  min-width: 110px;
+span.job-count {
+  font-weight: bold;
 }
 
 span.job-count.count-mismatch {
@@ -522,14 +518,12 @@ span.job-count.count-ok {
   color: blue;
 }
 
-span.job-count {
-  margin-left: 3px;
-  font-weight: bold;
-  font-size: 12px;
+span.job-count.post.count-ok {
+  color: purple;
 }
 
-span.job-count:not(.empty-chain) {
-  cursor: help;
+span.job-count.post > span.job-count.count-ok {
+  color: purple;
 }
 
 div.legend-desc {
