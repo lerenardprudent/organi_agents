@@ -28,6 +28,9 @@ msgstr "No agents found"
 msgid "agent_jobs"
 msgstr "{0} jobs coded"
 
+msgid  "adjust_tree"
+msgstr "Fit tree to screen"
+
 msgid "draw_hierarchy"
 msgstr "Display hierarchy"
 
@@ -69,6 +72,3 @@ msgstr "Post"
 
 msgid "createdby"
 msgstr "Created by"
-
-msgid  "fit_to_screen"
-msgstr "Fit to screen"
