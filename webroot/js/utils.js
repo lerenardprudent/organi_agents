@@ -157,47 +157,26 @@ function showAjaxSpinner(show)
   }
   
   function drawTree(e) {
-    e.preventDefault();
     $sel = $('[name="choice_agents[]"]');
     var agents = $sel.data('selected').toString().split(',');
-    var data = $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
-    let adjustNodes = false
-    $.ajax({
+    var data = typeof e === "string" ? e : $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
+    lastData = data
+    $('input[name=resize]').prop('disabled', true)
+    var ajaxOptions = {
       method: 'GET',
       url: $sel.data('urlBuildTreeConfig'),
-      data: data,
+      data,
       success: function(data) {
         var res = JSON.parse(data);
         if ( res.ok ) {
           $('#tree-legend').show();
           if ( !undef(res.updatedUrl) ) {
             window.history.pushState("Details", "Title", res.updatedUrl);
+            prevUrl = res.updatedUrl
           }
           $elem = $(res.rootElem);
           $elem.html("");
-          
-          let defaultNodeWidth = 250;
-          let defaultNodeFontSize = 0.7
-          let nodeWidth = defaultNodeWidth
-          let nodeFontSize = defaultNodeFontSize
-          if ( res.adjustNodeWidth ) {
-            let screenWidth = $('body').width()
-            let nNodes = res.relNodeCount;
-            let betweenSpacing = 40
-            let edgeSpacing = 15
-            
-            let adjustedNodeWidth = (screenWidth - 2*edgeSpacing) / nNodes - betweenSpacing
-            if ( adjustedNodeWidth < defaultNodeWidth ) {
-              nodeWidth = adjustedNodeWidth
-              let proportion = nodeWidth / defaultNodeWidth
-              nodeFontSize = proportion
-              adjustNodes = true
-            }
-            console.log(`Adjusting node width to ${nodeWidth}px`)
-            console.log(`Adjusting node font size to ${nodeFontSize}rem`)
-          }
-          injectStyles(`.nodeExample1 { width: ${nodeWidth}px }`)
-          injectStyles(`div.node > p, div.node > p > span { font-size: ${nodeFontSize}rem }`)
+          lastNodeCount = res.relNodeCount
           
           var treeConfigFilePath = res.treeConfigFilename; 
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
@@ -226,33 +205,14 @@ function showAjaxSpinner(show)
                   prevCountPost = upPost.prevCnt;
                   countPost = upPost.cnt;
                 });
-              },
-              complete: function() {
-                /* Break up lines that have text in brackets */
-                $('.node-title').each(function() {
-                  $(this).html( $(this).text().replace(/ \(/, " <br>("))
-                })
-                
-                if ( adjustNodes ) {
-                $('.node').each(function() {
-                  $(this).qtip({
-                    content: {
-                      text: $(this).html()
-                    },
-                    position: {
-                      my: 'bottom right',
-                      at: 'top left'
-                    }
-                  });
-                  console.log("Tooltips added")
-                });
-          }
               }
             });
           }
         }
       }
-    });
+    }
+    
+    $.ajax(ajaxOptions);
   }
   
   function updateNode(countInfo, prevCount, count, pre, compareCounts)
@@ -303,4 +263,57 @@ function showAjaxSpinner(show)
     var div = $("<div />", {
       html: '&shy;<style>' + rule + '</style>'
     }).appendTo("body");    
+  }
+  
+  function adjustTreeSize(event) {
+    shrinkTree = $(event.target).is(':checked')
+    
+    let defaultNodeWidth = 250;
+    let defaultNodeFontSize = 0.7
+    let nodeWidth = defaultNodeWidth
+    let nodeFontSize = defaultNodeFontSize
+    
+    if ( shrinkTree ) {
+      let screenWidth = $('body').width()
+      let nNodes = lastNodeCount
+      let betweenSpacing = 40
+      let edgeSpacing = 15
+
+      let adjustedNodeWidth = (screenWidth - 2*edgeSpacing) / nNodes - betweenSpacing
+      if ( adjustedNodeWidth < defaultNodeWidth ) {
+        nodeWidth = adjustedNodeWidth
+        let proportion = nodeWidth / defaultNodeWidth
+        nodeFontSize = proportion
+      }
+      console.log(`Adjusting node width to ${nodeWidth}px`)
+      console.log(`Adjusting node font size to ${nodeFontSize}rem`)
+    }
+    injectStyles(`.nodeExample1 { width: ${nodeWidth}px }`)
+    injectStyles(`div.node > p, div.node > p > span { font-size: ${nodeFontSize}rem }`)
+    drawTree(lastData)
+  }
+  
+  function handleLoadedTree(rootTreeNode)
+  {
+    /* Break up lines that have text in brackets */
+    $('.node-title').each(function() {
+      $(this).html( $(this).text().replace(/ \(/, " <br>("))
+    })
+                
+    $('input[name=resize]').prop('disabled', false)
+        
+    if ( shrinkTree ) {
+      $('.node').each(function() {
+        $(this).qtip({
+          content: {
+            text: $(this).html()
+          },
+          position: {
+            my: 'bottom center',
+            at: 'top center'
+          }
+        });
+        console.log("Tooltips added")
+      });
+    }
   }

@@ -69,3 +69,6 @@ msgstr "Post"
 
 msgid "createdby"
 msgstr "Created by"
+
+msgid  "fit_to_screen"
+msgstr "Fit to screen"

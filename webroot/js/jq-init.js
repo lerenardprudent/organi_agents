@@ -1,3 +1,7 @@
+let shrinkTree = false
+let lastData = null
+let lastNodeCount = -1
+
 $(document).ready(function() {
     initElems();
     setTriggers();

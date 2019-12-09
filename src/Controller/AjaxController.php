@@ -11,7 +11,6 @@ namespace App\Controller;
 use Cake\Utility\Inflector;
 use Cake\Event\Event;
 use Cake\Log\Log;
-use Cake\Core\Configure;
 
 class AjaxController extends AppController {
   
@@ -242,7 +241,8 @@ class AjaxController extends AppController {
         'nodeAlign' => "BOTTOM",
         'connectors' => [ 'type' => 'step' ],
         'node' => ['HTMLclass' => 'nodeExample1'],
-        'hideRootNode' => true
+        'hideRootNode' => true,
+        'callback' => [ 'onTreeLoaded' => "handleLoadedTree" ]
       ]
     ];
     
@@ -259,6 +259,7 @@ class AjaxController extends AppController {
       $js = "$varname = ".json_encode($obj);
       $js = preg_replace('/(?<!:)\"([^\"\,\:]+)\"/', "$1$2", $js);
       $js = preg_replace('/(parent:)\"([^\"\,\:]+)\"/', "$1$2", $js);
+      $js = preg_replace('/(onTreeLoaded:)\"([a-zA-Z]+)\"/', "$1$2", $js);
       array_push($jsConfigStrs, $js);
     }
     foreach ( $topLevelConfig as $varname => $conf ) {
@@ -290,7 +291,6 @@ class AjaxController extends AppController {
       $parsedUrl['query'] = preg_replace($regex, $repl, $parsedUrl['query']);
     }
     $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
-    $ret->adjustNodeWidth = Configure::read('adjustNodeWidth');
     $ret->relNodeCount = $relItemCount;
     
     $respBody = json_encode($ret);

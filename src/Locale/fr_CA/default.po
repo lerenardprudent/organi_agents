@@ -92,3 +92,6 @@ msgstr "Post"
 
 msgid "createdby"
 msgstr "Créé par"
+
+msgid  "fit_to_screen"
+msgstr "Adjuster la grandeur de l'arborescence en fonction de la largeur de l'écran"

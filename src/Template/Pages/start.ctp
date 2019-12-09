@@ -89,6 +89,7 @@ foreach ( $preTranslate as $pre ) {
         <?= $this->Form->control('choice_agents', ['options' => $chemAgents, 'label' => false, 'type' => 'select', 'class' => 'chosen-select', 'templateVars' => ['extraclasses' => 'inline-b minwidth-50'], 'multiple' => true, 'data-placeholder' => __("select_agents"), 'data-no-results-text' => __("no_agents_found"), 'data-unselect-all-text' => __("Unselect all"), 'data-init-selected' => $selectedAgents, 'data-selected' => [], 'data-url-build-tree-config' => $this->Url->build(['controller' => 'Ajax', 'action' => 'build-tree-config']), 'data-url-get-tree-legend' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-tree-legend']), 'data-url-get-job-counts' => $this->Url->build(['controller' => 'Ajax', 'action' => 'get-job-counts'])]) ?>
         <?= /*$this->Form->input('pre_auto', ['type' => 'checkbox', 'label' => __("use_preauto"), 'checked' => true, 'templateVars' => ['extraclasses' => 'inline-b pad-5']])*/ "" ?>
         <?= $this->Form->button(__('draw_hierarchy'), ['name' => 'draw-button', 'type' => 'button', 'class' => 'draw-tree my-button', 'disabled' => true, 'templateVars' => ['extraclasses' => 'inline-b']]) ?>
+        <?= $this->Form->control('resize', ['type' => 'checkbox', 'label' => __("fit_to_screen"), 'templateVars' => ['extraclasses' => 'inline-b'], 'onclick' => "adjustTreeSize(event)", 'disabled' => true ]) ?>
       </div>
     </div>
   </div>

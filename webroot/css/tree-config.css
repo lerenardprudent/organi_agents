@@ -69,3 +69,7 @@ p.node-desc, p.node-contact {
 .qtip-content * {
   font-size: 16px;
 }
+
+.qtip {
+  border-radius: 5px;
+}
