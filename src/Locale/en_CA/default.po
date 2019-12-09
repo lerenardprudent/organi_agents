@@ -19,6 +19,9 @@ msgstr ""
 msgid "title"
 msgstr "Chemical agent hierarchy visualisation"
 
+msgid "adjust_tree"
+msgstr "Fit tree to screen"
+
 msgid "select_agents"
 msgstr "Select a subset of chemical agents to show"
 
@@ -27,9 +30,6 @@ msgstr "No agents found"
 
 msgid "agent_jobs"
 msgstr "{0} jobs coded"
-
-msgid  "adjust_tree"
-msgstr "Fit tree to screen"
 
 msgid "draw_hierarchy"
 msgstr "Display hierarchy"

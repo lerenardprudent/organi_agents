@@ -1,6 +1,8 @@
 let shrinkTree = false
 let lastData = null
 let lastNodeCount = -1
+let treeLoaded = false
+let countsUpdated = false
 
 $(document).ready(function() {
     initElems();

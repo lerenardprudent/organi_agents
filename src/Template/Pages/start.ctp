@@ -37,7 +37,6 @@ foreach ( $preTranslate as $pre ) {
 }
 
 $ftsLabel = __("adjust_tree");
-$foo = 1;
 ?>
 <!DOCTYPE html>
 <html>

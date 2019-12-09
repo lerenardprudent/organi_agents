@@ -162,6 +162,7 @@ function showAjaxSpinner(show)
     var data = typeof e === "string" ? e : $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
     lastData = data
     $('input[name=resize]').prop('disabled', true)
+    treeLoaded = false
     var ajaxOptions = {
       method: 'GET',
       url: $sel.data('urlBuildTreeConfig'),
@@ -186,8 +187,12 @@ function showAjaxSpinner(show)
           preLabel = getTranslation('pre_label');
           postLabel = getTranslation('post_label');
           
-          
-          for ( var idc in res.chains ) {
+          let lastChainItem = false
+          countsUpdated = $.isEmptyObject(res.chains.length)
+          let keys = Object.keys(res.chains)
+          for ( i = 0; i < keys.length; i++ ) {
+            let idc = keys[i]
+            lastChainItem = (i == keys.length-1)
             $.ajax({
               url: $sel.data('urlGetJobCounts'),
               data: res.chains[idc].map(function(x) { return "chain[]=" + x}).join("&"),
@@ -205,6 +210,12 @@ function showAjaxSpinner(show)
                   prevCountPost = upPost.prevCnt;
                   countPost = upPost.cnt;
                 });
+              },
+              complete: function() {
+                if ( lastChainItem ) {
+                  countsUpdated = true
+                  handleLoadedTree()
+                }
               }
             });
           }
@@ -293,27 +304,31 @@ function showAjaxSpinner(show)
     drawTree(lastData)
   }
   
-  function handleLoadedTree(rootTreeNode)
+  function handleLoadedTree()
   {
-    /* Break up lines that have text in brackets */
-    $('.node-title').each(function() {
-      $(this).html( $(this).text().replace(/ \(/, " <br>("))
-    })
-                
-    $('input[name=resize]').prop('disabled', false)
-        
-    if ( shrinkTree ) {
-      $('.node').each(function() {
-        $(this).qtip({
-          content: {
-            text: $(this).html()
-          },
-          position: {
-            my: 'bottom center',
-            at: 'top center'
-          }
+    treeLoaded = true
+    if ( countsUpdated ) {
+
+      /* Break up lines that have text in brackets */
+      $('.node-title').each(function() {
+        $(this).html( $(this).text().replace(/ \(/, " <br>("))
+      })
+
+      $('input[name=resize]').prop('disabled', false)
+
+      if ( shrinkTree ) {
+        $('.node').each(function() {
+          $(this).qtip({
+            content: {
+              text: $(this).html()
+            },
+            position: {
+              my: 'bottom center',
+              at: 'top center'
+            }
+          });
+          console.log("Tooltips added")
         });
-        console.log("Tooltips added")
-      });
+      }
     }
   }
