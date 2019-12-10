@@ -31,7 +31,7 @@ class AppController extends Controller
   const LANG_EN = "en";
     
   public $lang;
-  public $agents_param = "agents";
+  public $agents_param = "choice_agents";
   public $lang_param = "lang";
     
   public function initialize()

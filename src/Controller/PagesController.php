@@ -64,13 +64,15 @@ class PagesController extends AppController
                            ->order($lblFld)->toArray();
         
         $this->set(compact('page', 'subpage', 'chemAgents'));
-        $selectedAgents = isset($_GET[$this->agents_param]) ? explode(',', $_GET[$this->agents_param]) : [];
+        $selectedAgents = isset($_GET[$this->agents_param]) ? $_GET[$this->agents_param] : [];
+        $resizeTree = isset($_GET['resize']) && $_GET['resize'] == '1';
         
         $preTranslate = ['jobs_coded', 'codes_missing', 'codes_match', 'pre_label', 'post_label'];
         $this->set(compact('page', 'subpage', 'chemAgents', 'selectedAgents', 'preTranslate'));
         $this->set('lang', $this->lang);
         $this->set('agentsParam', $this->agents_param);
         $this->set('langParam', $this->lang_param);
+        $this->set(compact('resizeTree'));
         
         try {
             $this->render(implode('/', $path));

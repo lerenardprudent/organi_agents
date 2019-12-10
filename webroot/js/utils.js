@@ -160,12 +160,10 @@ function showAjaxSpinner(show)
     $sel = $('[name="choice_agents[]"]');
     var agents = $sel.data('selected').toString().split(',');
     var data
-    $('#resize').prop('disabled', true)
-    $('.resize-wrapper').addClass('disabl')
     if ( typeof e === "string" ) {
       data = e
     } else {
-      data = $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&')
+      data = $('input[type=checkbox], select').serialize()
     }
     lastData = data
 
@@ -186,6 +184,8 @@ function showAjaxSpinner(show)
           $elem.html("");
           lastNodeCount = res.relNodeCount
           
+          
+          adjustTreeSize()
           var treeConfigFilePath = res.treeConfigFilename; 
           $.getScript(treeConfigFilePath, function( data, textStatus, jqxhr ) {
             new Treant(chart_config);
@@ -283,8 +283,8 @@ function showAjaxSpinner(show)
     }).appendTo("body");    
   }
   
-  function adjustTreeSize(event) {
-    shrinkTree = $(event.target).is(':checked')
+  function adjustTreeSize() {
+    shrinkTree = $('#resize').is(':checked')
     
     let defaultNodeWidth = 250;
     let defaultNodeFontSize = 0.7
@@ -308,7 +308,6 @@ function showAjaxSpinner(show)
     }
     injectStyles(`.nodeExample1 { width: ${nodeWidth}px }`)
     injectStyles(`div.node > p, div.node > p > span { font-size: ${nodeFontSize}rem }`)
-    drawTree(lastData)
   }
   
   function handleLoadedTree()
@@ -321,9 +320,6 @@ function showAjaxSpinner(show)
         $(this).html( $(this).text().replace(/ \(/, " <br>("))
       })
 
-      $('.resize-wrapper').removeClass('hide disabl')
-      $('#resize').prop('disabled', false)
-
       if ( shrinkTree ) {
         $('.node').each(function() {
           $(this).qtip({
@@ -335,7 +331,6 @@ function showAjaxSpinner(show)
               at: 'top center'
             }
           });
-          console.log("Tooltips added")
         });
       }
     }

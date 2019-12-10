@@ -281,7 +281,7 @@ class AjaxController extends AppController {
     $repl = $pfx.urlencode(implode(',', $agentIds));
     if ( strpos($refererUrl, $pfx) === false ) {
       if ( !isset($parsedUrl['query']) ) {
-      $parsedUrl['query'] = '';
+        $parsedUrl['query'] = '';
       } else {
         $parsedUrl['query'] .= '&';
       }
@@ -290,7 +290,7 @@ class AjaxController extends AppController {
       $regex = '/'.$pfx.'[^&]+/';
       $parsedUrl['query'] = preg_replace($regex, $repl, $parsedUrl['query']);
     }
-    $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'.$parsedUrl['query'];
+    $ret->updatedUrl = $parsedUrl['scheme']."://".$parsedUrl['host'].$parsedUrl['path'].'?'. $_SERVER['QUERY_STRING'];// $parsedUrl['query'];
     $ret->relNodeCount = $relItemCount;
     
     $respBody = json_encode($ret);
