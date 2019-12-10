@@ -472,6 +472,10 @@ ul.chosen-results li {
   min-width: 50%;
 }
 
+#tree-root {
+  margin-top: -20px;
+}
+
 #tree-legend {
   display: none;
   width: 55%;
@@ -574,4 +578,12 @@ div.footer > span.footer-text {
 p.node-title {
   line-height: 1.5;
   margin-bottom: 5px;
+}
+
+div.hide {
+  display: none;
+}
+
+div.resize-wrapper.disabl > label {
+  color: lightgrey;
 }

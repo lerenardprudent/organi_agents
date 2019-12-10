@@ -60,6 +60,7 @@ div.node > p, div.node > p > span {
 
 button[name="draw-button"] {
   margin: 0;
+  width: 9%;
 }
 
 p.node-desc, p.node-contact {

@@ -32,7 +32,7 @@ msgid "agent_jobs"
 msgstr "{0} jobs coded"
 
 msgid "draw_hierarchy"
-msgstr "Display hierarchy"
+msgstr "Display"
 
 msgid "canjem_agent"
 msgstr "CANJEM agent"

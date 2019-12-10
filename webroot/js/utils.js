@@ -159,9 +159,16 @@ function showAjaxSpinner(show)
   function drawTree(e) {
     $sel = $('[name="choice_agents[]"]');
     var agents = $sel.data('selected').toString().split(',');
-    var data = typeof e === "string" ? e : $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&');
+    var data
+    $('#resize').prop('disabled', true)
+    $('.resize-wrapper').addClass('disabl')
+    if ( typeof e === "string" ) {
+      data = e
+    } else {
+      data = $.map(agents, function(agentId) { return $('body').data('agentsParam') + "[]="+agentId; }).join('&')
+    }
     lastData = data
-    $('input[name=resize]').prop('disabled', true)
+
     treeLoaded = false
     var ajaxOptions = {
       method: 'GET',
@@ -314,7 +321,8 @@ function showAjaxSpinner(show)
         $(this).html( $(this).text().replace(/ \(/, " <br>("))
       })
 
-      $('input[name=resize]').prop('disabled', false)
+      $('.resize-wrapper').removeClass('hide disabl')
+      $('#resize').prop('disabled', false)
 
       if ( shrinkTree ) {
         $('.node').each(function() {

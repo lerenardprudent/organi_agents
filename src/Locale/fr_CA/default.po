@@ -20,7 +20,7 @@ msgid "title"
 msgstr "Organigramme des agents chimiques"
 
 msgid "adjust_tree"
-msgstr "Adjuster la grandeur de l'arborescence à l'écran"
+msgstr "Rédimensionner l'arborescence en fonction de la largeur de l'écran"
 
 msgid "select_agents"
 msgstr "Sélectionner un sous-ensemble d'agents chimiques à afficher"
@@ -29,7 +29,7 @@ msgid "no_agents_found"
 msgstr "Aucuns agents trouvés"
 
 msgid "draw_hierarchy"
-msgstr "Afficher l'organigramme"
+msgstr "Afficher"
 
 msgid "SubFamily"
 msgstr "SousFamille"
@@ -96,6 +96,3 @@ msgstr "Post"
 
 msgid "createdby"
 msgstr "Créé par"
-
-msgid  "adjust_tree"
-msgstr "Adjuster la grandeur de l'arborescence en fonction de la largeur de l'écran"
