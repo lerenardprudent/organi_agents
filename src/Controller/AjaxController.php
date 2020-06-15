@@ -65,7 +65,7 @@ class AjaxController extends AppController {
 
       foreach ( $cols as $lv_i => $lv_n ) {
         if ( $lookup->$lv_n && $startLvl < $lv_i+1 ) {
-          $relModelCond = "$startModel.$lv_n = $relModel.$lv_n";
+          $relModelCond = ["$startModel.$lv_n = $relModel.$lv_n", "$startModel.idchem <> $relModel.idchem" ];
           break;
         }
       }
@@ -94,8 +94,7 @@ class AjaxController extends AppController {
                                                 'conditions' => $relModelCond ] ])
                         ->select($selectFlds, false)
                         ->contain($modelsAbove)
-                        ->where(["$startModel.idchem" => $agentId,
-                                 "$relModel.idchem <> $startModel.idchem"])
+                        ->where(["$startModel.idchem" => $agentId])
                         ->toArray();
       $relItemCount += count($its);
       
